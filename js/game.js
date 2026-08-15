@@ -217,32 +217,32 @@ const Game = {
       }
     }
 
-    // ---- Puesto de cubanitos ----
+    // ---- Puesto de cubanitos (compra automática al pasar) ----
     this.buyZone = null;
     for (const s of this.stands) {
       if (s.bought) continue;
       const z = s.zone();
       if (p.x > z.x - 12 && p.x < z.x + z.w + 12) {
         this.buyZone = s;
-        if (Input.jumpPressed) {
-          if (p.coins >= CONFIG.CUBANITO_PRICE) {
-            if (p.hp >= p.maxHp) {
-              this.buyMsg = '¡VIDA COMPLETA!';
-            } else {
-              p.coins -= CONFIG.CUBANITO_PRICE;
-              p.heal(CONFIG.CUBANITO_HEAL);
-              s.bought = true;
-              this.buyZone = null;
-              p.state = 'eat';
-              p.stateTime = 0;
-              AudioSys.buy();
-              setTimeout(() => AudioSys.eat(), 250);
-              this.buyMsg = '+50 HP';
-            }
+        if (p.coins >= CONFIG.CUBANITO_PRICE) {
+          if (p.hp >= p.maxHp) {
+            this.buyMsg = '¡VIDA LLENA! NO NECESITAS CUBANITO';
+            this.buyMsgTime = 1.0;
           } else {
-            this.buyMsg = 'TE FALTAN MONEDAS (' + CONFIG.CUBANITO_PRICE + ')';
+            p.coins -= CONFIG.CUBANITO_PRICE;
+            p.heal(CONFIG.CUBANITO_HEAL);
+            s.bought = true;
+            this.buyZone = null;
+            p.state = 'eat';
+            p.stateTime = 0;
+            AudioSys.buy();
+            setTimeout(() => AudioSys.eat(), 250);
+            this.buyMsg = '+50 HP';
+            this.buyMsgTime = 1.6;
           }
-          this.buyMsgTime = 1.6;
+        } else {
+          this.buyMsg = 'TE FALTAN MONEDAS (' + CONFIG.CUBANITO_PRICE + ')';
+          this.buyMsgTime = 0.9;
         }
       }
     }

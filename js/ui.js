@@ -47,7 +47,7 @@ const UI = {
       ctx.strokeStyle = '#000';
       ctx.lineWidth = 3;
       ctx.textAlign = 'center';
-      const msg = '¡PRESIONA SALTAR PARA COMPRAR CUBANITO!';
+      const msg = 'CUBANITO · ' + CONFIG.CUBANITO_PRICE + ' MONEDAS · ¡ACERCATE Y COMELO!';
       ctx.strokeText(msg, CONFIG.VW / 2, CONFIG.VH - 40);
       ctx.fillText(msg, CONFIG.VW / 2, CONFIG.VH - 40);
       ctx.textAlign = 'left';

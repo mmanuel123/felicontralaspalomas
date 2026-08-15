@@ -105,12 +105,13 @@ class Car {
     this.worldX += this.dir * this.speed * dt;
   }
   hitbox() {
-    const w = 84, h = 36;
-    return { x: screenX(this.worldX) + 6, y: 166, w, h };
+    // Amarok: 50x19 a escala 4 => 200x76px | Falcon: 52x18 => 208x72px
+    const spec = this.type === 'falcon' ? { w: 200, h: 64 } : { w: 200, h: 68 };
+    return { x: screenX(this.worldX) + 4, y: 228 - spec.h, w: spec.w, h: spec.h };
   }
   draw(ctx) {
     const key = (this.dir === -1 ? 'Left' : 'Right') + (this.type === 'falcon' ? 'Falcon' : 'Amarok');
-    drawSprite(ctx, SPR['car' + key], screenX(this.worldX), 166, { scale: 4 });
+    drawSprite(ctx, SPR['car' + key], screenX(this.worldX), 226, { scale: 4, pivot: 'bottom' });
   }
 }
 

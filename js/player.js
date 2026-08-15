@@ -33,10 +33,10 @@ class Player {
   get laneInfo() { return CONFIG.LANES[this.lane]; }
   get isOnSidewalk() { return this.laneInfo.type === 'sidewalk'; }
 
-  // hitbox aproximada del personaje (cuello→pies)
+  // hitbox aproximada del personaje (sprite ~72px de alto con contorno)
   hitbox() {
-    const h = 60, w = 24;
-    return { x: this.x - 8, y: this.feetY - h, w, h };
+    const h = 56, w = 22;
+    return { x: this.x - 11, y: this.feetY - h, w, h };
   }
 
   takeDamage(dmg, source) {
@@ -184,14 +184,15 @@ class Player {
   kickHitbox() {
     const hb = this.hitbox();
     return {
-      x: this.x + 4, y: this.feetY - 46, w: 26, h: 30,
+      x: this.x + 4, y: this.feetY - 40, w: 24, h: 28,
     };
   }
 
   // dibujo
   draw(ctx) {
     if (this.state === 'dead') {
-      drawSprite(ctx, SPR.player.dead, this.x - 22, this.feetY, { scale: 3, pivot: 'bottom' });
+      const spr = SPR.player.dead;
+      drawSprite(ctx, spr, this.x - (spr.w * 2) / 2, this.feetY, { scale: 2, pivot: 'bottom' });
       return;
     }
 
@@ -206,6 +207,9 @@ class Player {
     // parpadeo al ser invencible
     if (this.invincible > 0 && Math.floor(this.invincible * 12) % 2 === 0) return;
 
-    drawSprite(ctx, spr, this.x, this.feetY, { scale: spr.scale, pivot: 'bottom' });
+    const s = spr.scale;
+    const bob = (this.state === 'run') ? Math.sin(this.animTime * 16) * 2 : 0;
+    const dw = spr.w * s, dh = spr.h * s;
+    drawSprite(ctx, spr, this.x - dw / 2, this.feetY + bob, { scale: s, pivot: 'bottom' });
   }
 }

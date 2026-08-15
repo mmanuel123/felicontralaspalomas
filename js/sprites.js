@@ -79,128 +79,128 @@ function flipRows(rows) {
 }
 
 // ============================================================
-// PERSONAJE — niño rubio con anteojos de marco azul
+// PERSONAJE — generado a partir de las imágenes del usuario
+// (Imagenes/personaje principal corriendo.png, saltando.png,
+//  Personaje principa game over.png) con gen_sprite.js
+// Paleta unificada para las 3 poses.
 // ============================================================
-const P_PLAYER = {
-  H: '#f5c542', h: '#d9a02c', // pelo rubio (claro/oscuro)
-  S: '#ffd9b3', s: '#e6b98c', // piel
-  B: '#3a6ff0', b: '#2a4fae', // marco anteojos azul
-  W: '#eaf4ff',               // vidrio
-  K: '#20242e',               // pupila / contorno
-  T: '#e5484d', t: '#b5373b', // remera roja
-  P: '#2f5fd0', p: '#22428f', // pantalón azul
-  R: '#f0a030', r: '#c67a1e', // zapatillas
+const P_BOY = {
+  A: '#0d0f16',   // contorno
+  B: '#6b3a14',   // pelo castaño
+  C: '#e3a41c',   // pelo rubio
+  D: '#f2b785',   // piel
+  E: '#d88e5e',   // piel sombra
+  F: '#2a63c2',   // remera azul
+  G: '#173f85',   // azul oscuro / anteojos
+  H: '#e2582a',   // naranja (detalle)
+  I: '#5f7a3e',   // pantalón verde
+  J: '#43562b',   // verde oscuro
+  K: '#e8eef2',   // blanco
+  L: '#24407c',   // denim
 };
 
-const HEAD = [
-  '..HHHHHHHHHHH...',
-  '.HHHHHHHHHHHHH..',
-  '.HHHHHHHHHHHHH..',
-  '.HHHHSSSSSSSHH..',
-  '.HHHSSSSSSSSSH..',
-  '.HHBBBBBBBBBBH..',
-  '.HHBWKWB.BWKWBH.',
-  '.HHBBBBBBBBBBH..',
-  '.HHSSSSSSSSSSH..',
-  '.HHHHSSSSSSSHH..',
+// Corriendo (23x34) — pose de carrera, vista frontal.
+// Regenerado a mayor resolución (34 filas, escala 2 => 46x72px).
+const PLAYER_RUN = [
+  '........B.BBBBBBHHBB...',
+  '....BBBBHHCCCHCCCCBB...',
+  '....BHHHCCCCCCCCCBBBB..',
+  '..DEEBCCCCCCCCCCCCCCHB.',
+  '..EBHCCCCCCCCCCCCCCBBB.',
+  '..EBHCCCCCCCCCCCCCCCHB.',
+  '...BHCCCCCCCCCCCCCCCCHB',
+  '..IBCCCCCCCCCCCCBHCHBHB',
+  '..BCCCCCCCCCCBHCHHHHBJB',
+  '..BAHCCCCCCCHHHBIIHBBJ.',
+  '...AHCCCHHCCHDDIJJIAAJ.',
+  '...BHHBJJABBBIIFLAFA...',
+  '...ABHBEEEBBIIIGLAGA...',
+  '...ABHBEDEDEDDIGFLGAA..',
+  '...KAHBBDEDDDDDGGGLDA..',
+  '....ABBBBAEDDDDDDDDBI..',
+  '.....AAABBHEDDDDEEEA...',
+  '....AJJAAAABBHEEEIBA...',
+  '...AJIIJGGLIJLAAAAI....',
+  '..KAIIJGFFFIIFFGAAAK...',
+  '..KAIJBLFFGJIFFGBBEAI..',
+  '..KAJJHDEAJJLFFIBEEIE..',
+  '..KAJJEDDBJLFFFLBHEBI..',
+  '...AAJBDDDJFFFFAABBA...',
+  '....AAAEDDIGGGLAAA.....',
+  '..JJJJJAHBAAALGGLAA....',
+  '.IJBBAAAAALGGGGGLIAABBA',
+  '.AEHHIAALAAAAALLEDHBHHA',
+  '.AHHHDLGGAAAAAAJEHHHHIJ',
+  '.AEHHDIAAAAE.DAAEHHHEJE',
+  '.AJHHEAAAAK...AABHHIJA.',
+  '..JDHBA.........AIEJI..',
+  'LJJIEAAAAAAAAAAAAAAAALL',
+  'AAAAAAAAAAAAAAAAAAAAAAJ',
 ];
-const TORSO_F = [   // brazo adelante
-  '.HHSSSSSSSSS....',
-  '.TTTTTTTTTTSS...',
-  'TTTTTTTTTTSS....',
-  'TTTTTTTTTTSS....',
+
+// Saltando (24x28) — piernas abiertas en el aire (sin sombra flotante)
+const PLAYER_JUMP = [
+  '........BBBHCHBHBB......',
+  '.....BCCCCCCCCCCHBBB....',
+  '.....AHCCCCCCCCCCCCB....',
+  '...BHCCCCCCCCCCCCCBB....',
+  '...BHCCCCCCCCCCCCCCHB...',
+  'AJIJBCCCCCCCCCCHCCHBB...',
+  'BDDEBCCCCCCHBCHHHCCBAJJ.',
+  'IDEDBCCCCHBEEBEDEBBBIEEB',
+  'BEEEBHCCCHIJIEDEJIBAEEDI',
+  'JBEDIHBBBLILLFILLILBEEHB',
+  '.AIDDBEEJLEALLIGAELEDHB.',
+  '..BEDEEHEEFFFEELGFIDEJ..',
+  '..IBDDIIHDEEIEEEEIDEJK..',
+  '...JBEFGAEDDBBBDELBB....',
+  '....AGFFLJBEEHEILGA.....',
+  '.....AGFGILLBBAJGAA.....',
+  '....JJJLJIFFFFGJAJ......',
+  '....AIJAJJFFFFFAA.......',
+  '....AIJJAGFFFFFAAAA.....',
+  '....JJJAGFFFFFGALGLAABBJ',
+  '.....AAAAGGGGGLGGGGJBHIJ',
+  '...JJJAAAGGGGLGLAGLEHEIJ',
+  '...JBBAAGGGGAAAAAAIHHEIA',
+  '...JHHLLGGGAAA...AABEIA.',
+  '..JBHILGGGAA......ABIJJ.',
+  '..AHHIAALAA........AAE..',
+  '..AHHBAAAA..............',
+  '...JJA..................',
 ];
-const TORSO_B = [   // brazo atrás
-  '.HHSSSSSSSSS....',
-  '.TTTTTTTTTTT....',
-  'TTTTTTTTTT......',
-  'TTTTTTTTTT......',
-];
-const LEGS_A = [
-  '..PPPPPPPPPP....',
-  '..PP.....PP.....',
-  '..PP.....PP.....',
-  '..PP......PP....',
-  '..PP......PP....',
-  '..RR......PP....',
-  '..RR.......RR...',
-  '..........RR....',
-];
-const LEGS_B = [
-  '..PPPPPPPPPP....',
-  '...PP....PP.....',
-  '...PP....PP.....',
-  '...PP....PP.....',
-  '...PP....PP.....',
-  '...RR....PP.....',
-  '...RR....RR.....',
-  '.........RR.....',
-];
-const LEGS_C = [
-  '..PPPPPPPPPP....',
-  '....PP....PP....',
-  '....PP....PP....',
-  '....PP.....PP...',
-  '....PP.....PP...',
-  '....PP.....RR...',
-  '....PP.....RR...',
-  '...RR...........',
-];
-const LEGS_JUMP = [
-  '..PPPPPPPPPP....',
-  '..PP....PP......',
-  '..PP....PP......',
-  '..PP....PP......',
-  '.PP......PP.....',
-  '.RR......RR.....',
-  '.RR......RR.....',
-  '................',
-];
-const LEGS_KICK = [
-  '..PPPPPPPPPP....',
-  '..PP....PP......',
-  '..PP....PP......',
-  '..PP.....PP.....',
-  '.RR......PP.....',
-  '.RR.......RR....',
-  '...........RR...',
-  '.............RR.',
-];
+
+// Game over (39x16) — tirado en el suelo, compacto (escala 2 => 82x36px)
 const PLAYER_LIE = [
-  '................',
-  '..HHHHHHH.......',
-  '.HHHHHHHHH......',
-  '.HSSSSSSSSH.....',
-  '.HSBBBBBBSS.....',
-  '.HSBWWKBBSS.....',
-  '.HHHHHSSSS......',
-  '..TTTTTTTTTT....',
-  '.TTTTTTTTTTTT...',
-  '.TTTTTTTTTTTT...',
-  '.SSSSSSSSSSSS...',
-  '.PPPPPPPPPPPP...',
-  '..PP....PP......',
-  '..PP....PP......',
-  '..RR....RR......',
+  '.........................BBBJBA........',
+  '......................JJBBCHBCBAAB.....',
+  '......................ABCCCCCCCCCBBBA..',
+  '.....................ABBCCCCCCCCCCCBJ..',
+  '.....................BHCCCCCCCCCCCCBB..',
+  '.....................BBBCCCCCCCCCCCCHB.',
+  '...............AAJJJABEEBCCCCCCCCCCCBB.',
+  '..............AJJIIJJJDEJBBCHBCCCCCCBJ.',
+  '..............AJJJJJJJEEBLIIBHCCCCCCCB.',
+  '............AAAAGAAAAJIDDEFFIHHBBCCCBBB',
+  '...JAAI.AAJALGLGFFFFFGADDFJAILEEBCCCB..',
+  '..AJHBAAAAAGGGAFFFGFFFAEDIGAFLFFBHHBHA.',
+  '.AAHHHLGLAGGGGAFFFGLIGABDDELEIGILBBABA.',
+  '.AHHHIAGGGGGGAAFFFAEDEAAEDIEELAAFJIEIA.',
+  '.JHHIJAALGGLAAAGGFGEDDDDEIEBDELLLHEEEI.',
+  'LJBBAAAAAAAAAAAAAAAJBBBBBAJJJJAJAABBBJL',
 ];
 
 function buildPlayer(scale) {
-  const frames = [];
-  const combos = [
-    [TORSO_F, LEGS_A], [TORSO_B, LEGS_B], [TORSO_F, LEGS_C],
-    [TORSO_B, LEGS_B], [TORSO_F, LEGS_A], [TORSO_B, LEGS_C],
-  ];
-  const OUTLINE = '#10131c';
-  for (const [t, l] of combos) {
-    frames.push(makeSprite(HEAD.concat(t, l), P_PLAYER, scale, OUTLINE));
-  }
+  const OUTLINE = '#0d0f16';
+  const run = makeSprite(PLAYER_RUN, P_BOY, scale, OUTLINE);
+  const jump = makeSprite(PLAYER_JUMP, P_BOY, scale, OUTLINE);
   SPR.player = {
-    run: frames,
-    jump: makeSprite(HEAD.concat(TORSO_B, LEGS_JUMP), P_PLAYER, scale, OUTLINE),
-    fall: makeSprite(HEAD.concat(TORSO_B, LEGS_JUMP), P_PLAYER, scale, OUTLINE),
-    kick: makeSprite(HEAD.concat(TORSO_F, LEGS_KICK), P_PLAYER, scale, OUTLINE),
-    hurt: makeSprite(HEAD.concat(TORSO_B, LEGS_A), P_PLAYER, scale, OUTLINE),
-    dead: makeSprite(PLAYER_LIE, P_PLAYER, scale, OUTLINE),
+    run: [run, run, run, run, run, run],
+    jump,
+    fall: jump,
+    kick: jump,
+    hurt: run,
+    dead: makeSprite(PLAYER_LIE, P_BOY, scale, OUTLINE),
   };
 }
 
@@ -254,66 +254,93 @@ const PIGEON_DEAD = [
 ];
 
 // ============================================================
-// AUTOS — Ford Falcon (destruido) y VW Amarok
+// AUTOS — generados a partir de Imagenes/Amarok.png y Ford.png
+// Colores reales de las fotos: Amarok amarilla (#f7c901),
+// Ford Falcon gris oscuro con techo claro.
 // ============================================================
-const P_CAR = {
-  B: '#e5484d', b: '#b5373b', // carrocería roja
-  G: '#9aa7b8', g: '#76808f', // vidrio claro (techo)
-  W: '#dfe8f2',               // ventanas
-  R: '#a05030', r: '#7a3a20', // óxido (falcon destruido)
-  K: '#20242e',               // ruedas
-  D: '#5a5a66',               // bajos
-  M: '#c9cdd4',               // metal/paragolpes
-  Y: '#ffd23c',               // faro delantero
-  T: '#d85040',               // luz trasera
-};
+// VW Amarok — pick-up amarilla (50x19, mirando a la izquierda).
+// Diseño en píxeles más finos (escala 4 => 200x80px).
 const P_AMAROK = {
-  B: '#9aa7b8', b: '#76808f', // carrocería plateada
-  G: '#dfe8f2', g: '#c2ccd8', // vidrio
-  W: '#dfe8f2',
-  R: '#6e5a3a',               // carga
-  K: '#20242e',
-  D: '#4a4a56',
-  M: '#c9cdd4',
-  H: '#3a3a48',               // estacas de la caja
-  Y: '#ffd23c',               // faro delantero
-  T: '#d85040',               // luz trasera
+  A: '#0d0f16',   // contorno / bajos
+  B: '#1b1e26',   // borde de carga
+  C: '#8a5a2f',   // carga en la caja
+  D: '#2a2e36',   // bajos
+  G: '#2f3a52',   // vidrio
+  h: '#ffe05a',   // brillo del techo
+  K: '#14161c',   // ruedas
+  L: '#f2e9d0',   // faro delantero
+  M: '#c9cdd4',   // paragolpes/metal
+  T: '#d85040',   // luz trasera
+  W: '#d6dcec',   // reflejo del vidrio
+  Y: '#f7c901',   // carrocería amarilla
+  y: '#a17f00',   // sombra amarilla
 };
-
-// Falcon destruido — sedán clásico (28x9, mirando a la izquierda):
-// capó largo, parabrisas en pendiente, cabina con luneta, baúl y paragolpes.
-const FALCON = [
-  '......WWWWWWWW..............',
-  '.....WWWWWWWWWWWWW..........',
-  '...WWWWWWWWWWWWWWWWWW.......',
-  '.BBWWWWWW..........WWWWBB...',
-  'YBBBBBBBBBBBBBBBBBBBBBBBBT.',
-  'YBBBBBBBBBBBBBBBBBBBBBBBBT.',
-  'MMBBBBBRRBBBBBBBBBRRBBBBBBM.',
-  '..KKKKKKKKKKKKKKKKKKKKKKKK..',
-  '..OO.............OO.........',
-];
-// Amarok — pick-up (26x9, mirando a la izquierda):
-// cabina con vidrios adelante, caja abierta atrás con estacas y carga.
 const AMAROK = [
-  '.....GGGGGG...............',
-  '..WWWWWWWWWWWW............',
-  '.WWWWWWWWWWWWWW...........',
-  '.BBWWWWWW......HH.HH.HH...',
-  'YBBBBBBBBBBBBBBBBBBBBBBBB.',
-  'BBBBBBBBBBBBCCCCCCBBBBBBR.',
-  'BBBBBBBBBBBBWWWWWWBBBBBBB.',
-  'KKKKKKKKKKKKKKKKKKKKKKKKK.',
-  '.OO.............OO........',
+  '..................................................',
+  '..................................................',
+  '..................................................',
+  '....................YhhhhhhhhhY...................',
+  '...................YGYYYYYYYYYYY..................',
+  '..................YGGYYYYYYYYYYYG.................',
+  '.............MM..YGGGGGGGGYGGGGGGG.....CCCCCCC....',
+  '................YGGGYGGWWWYWWGGGGGG....CCCCCCC....',
+  '...............YGGGYYGWWWWYGGGGGGGG....CCCCCCC....',
+  '..............GGGGYYYGGGGGYGGGGGGGGG...CCCCCCC....',
+  '.YYYYYYYYYYYYKYYYYYYyYYYYYYYYYYYYyYKYYBBBBBBBBBB..',
+  '.YYYYYYYYYKKKKKKKYYYyYMMYYYYYMMYKKKKKKKyyyyyyyyY..',
+  'MLLYYYYYYKKKKKKKKKYYyYMMYYYYYMMKKKKKKKKKyyyyyyyTT.',
+  'MLLYYYYYYKKKKKKKKKYYyYYYYYYYYYYKKKKKKKKKyyyyyyyTTY',
+  'MyyyyyyyyKKKMMMKKKyyyyyyyyyyyyyKKKMMMKKKyyyyyyyyyY',
+  'MyyyyyyyKKKKMMMKKKKyyyyyyyyyyyKKKKMMMKKKKyyyyyyMMY',
+  'MYYYYYYYYYKKMMMKKMMMMMMMMMMMMMMYKKMMMKKyyyyyyyyMMY',
+  '......DDDDDKKKKKDDDDDDDDDDDDDDDDDKKKKKDDDDDDD.....',
+  '............KKK...................KKK.............',
+];
+
+// Ford Falcon — sedán clásico gris con techo claro (52x18, mirando a la izquierda).
+const P_FALCON = {
+  C: '#8a5a2f',   // óxido
+  c: '#592c19',   // óxido oscuro
+  D: '#2e333d',   // carrocería gris oscuro
+  d: '#20242c',   // sombra de la carrocería
+  G: '#2f3a52',   // vidrio
+  K: '#14161c',   // ruedas
+  L: '#fdfefe',   // faro delantero
+  M: '#c6ccd4',   // paragolpes/cromados
+  r: '#8f887e',   // sombra del techo
+  R: '#b3aba0',   // techo gris claro
+  T: '#d85040',   // luz trasera
+  W: '#d6dcec',   // reflejo del vidrio
+  Z: '#9da6b3',   // reflejo de la carrocería
+};
+const FALCON = [
+  '....................................................',
+  '....................................................',
+  '....................................................',
+  '.....................RRRRRRRRRR.....................',
+  '....................DRRRRRRRRRRD....................',
+  '...................DGrrrrrrrrrrGD...................',
+  '..................DGGGGGGDGGGGGGGDD.................',
+  '...............MM.GGGDGWWDWWGGGGGGGD................',
+  '.................DGGDDWWWDGGGGGGGGGGD...............',
+  '................GGGDDDGGGDGGGGGGGGGGGZZZZZZZZZD.....',
+  '..ZZZZZZZZZZZKZDDDDdDDDDDDDDDDDdDDDDKDDDDDDDDDDD....',
+  '..DDDDDccDKKKKKKKDDdDDDDMMDDDDDdcKKKKKKKDDDDDDDDTTT.',
+  'MDDDDDCccKKKKKKKKKDdDDDDMMDDDDCdKKKKKKKKKDDDDDDDTTT.',
+  'MLDDDDCccKKKKKKKKKDdDDDDDDDDDDCdKKKKKKKKKDDDDDDDDDDD',
+  'MLDDDDCCCKKKMMMKKKCdCCCCCDDDDDCdKKKMMMKKKDDDDDDMMMMM',
+  'MDDdddddKKKKMMMKKKKCCCCCCCCCDDDKKKKMMMKKKKddddDMMMMM',
+  'MDDDDDDDDDKKMMMKKDDDDDDDDDDDDDDDDKKMMMKKDDDDDDDMMMMM',
+  '.....DDDDDDKKKKKDDDDDDDDDDDDDDDDDDKKKKKDDDDDDDDD....',
 ];
 
 function buildCars(scale) {
   const OUTLINE = '#10131c';
-  const falconL = makeSprite(FALCON, P_CAR, scale, OUTLINE);
+  const falconL = makeSprite(FALCON, P_FALCON, scale, OUTLINE);
   const amarokL = makeSprite(AMAROK, P_AMAROK, scale, OUTLINE);
   SPR.carLeftFalcon = falconL;
   SPR.carLeftAmarok = amarokL;
-  SPR.carRightFalcon = makeSprite(flipRows(FALCON), P_CAR, scale, OUTLINE);
+  SPR.carRightFalcon = makeSprite(flipRows(FALCON), P_FALCON, scale, OUTLINE);
   SPR.carRightAmarok = makeSprite(flipRows(AMAROK), P_AMAROK, scale, OUTLINE);
 }
 
@@ -458,7 +485,7 @@ const LAMP = [
 // Inicialización
 // ============================================================
 function initSprites() {
-  buildPlayer(3);
+  buildPlayer(2);
   SPR.pigeon = [
     makeSprite(PIGEON_A, P_PIGEON, 2),
     makeSprite(PIGEON_B, P_PIGEON, 2),

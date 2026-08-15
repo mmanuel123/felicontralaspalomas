@@ -113,7 +113,7 @@ const LevelGen = {
       } else if (r < 0.70 + d * 0.01) {
         // tráfico: 1-2 autos (muchas Amarok)
         this.spawnCar(x);
-        if (d > 2 && this.rng() < 0.5) this.spawnCar(x + 70 + this.rng() * 60);
+        if (d > 2 && this.rng() < 0.5) this.spawnCar(x + 250 + this.rng() * 100);
         this.nextSpawnX += 70;
       } else if (r < 0.78) {
         this.spawnCoins(x, this.rng() < 0.5 ? 0 : 2);
