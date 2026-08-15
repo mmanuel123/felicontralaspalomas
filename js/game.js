@@ -14,7 +14,7 @@ const Game = {
   buyMsg: '',
   buyMsgTime: 0,
   shakeTime: 0,
-  levelIndex: 0,               // 0=ALSINA, 1=BELGRANO, 2=LAS HERAS
+  levelIndex: 0,               // 0=LAS HERAS, 1=BELGRANO, 2=ALSINA
   lives: 0,                    // vidas de la partida (3 iniciales, máx 5)
   coinsEarned: 0,              // monedas ganadas de por vida (nunca baja al gastar)
   pigeons: [],
@@ -187,8 +187,16 @@ const Game = {
 
     this.handleCollisions();
 
-    // Puesto de cubanitos dinámico: aparece una sola vez por nivel, sólo
-    // cuando la vida baja del 30%, unos metros más adelante sobre la vereda.
+    // Puesto de cubanitos dinámico: aparece cuando la vida baja del 30%,
+    // unos metros más adelante sobre la vereda. Si el personaje lo pasa sin
+    // poder comprarlo (no le alcanzan las monedas), reaparece más adelante
+    // mientras siga necesitando vida. Los comprados se limpian al quedar atrás.
+    for (let i = this.stands.length - 1; i >= 0; i--) {
+      const s = this.stands[i];
+      if (p.distance <= s.worldX + 100) continue;
+      this.stands.splice(i, 1);
+      if (!s.bought) this.standSpawned = false;   // quedó atrás sin comprar: permitir que reaparezca
+    }
     if (!this.standSpawned && p.alive && p.hp < p.maxHp * 0.30) {
       this.standSpawned = true;
       const lane = p.lane === 1 ? 0 : p.lane; // siempre sobre una vereda
@@ -209,7 +217,12 @@ const Game = {
         this.garrapinadaCooldown <= 0) {
       p.garrapinadas--;
       this.garrapinadaCooldown = CONFIG.GARRAPIÑADA_THROW_COOLDOWN;
-      this.garrapinadas.push(new Garrapinada(p.distance + 24, p.feetY - 46, -130));
+      // ráfaga de 3 garrapiñadas que sale del cuerpo del personaje (x fija)
+      const gx = p.distance + p.x + 14;
+      const gy = p.feetY - 46;
+      for (const vy of [-140, -240, -340]) {
+        this.garrapinadas.push(new Garrapinada(gx, gy, vy));
+      }
       AudioSys.throw();
       if (p.garrapinadas <= 0) {
         p.hasGarrapinadas = false;
@@ -223,7 +236,9 @@ const Game = {
     const cut = this.cameraX - 140;
     this.pigeons = this.pigeons.filter(e => screenX(e.worldX) > -80 && !(e.dead && e.deadTimer > 0.7));
     this.poops = this.poops.filter(e => screenX(e.worldX) > -80 && e.y < 400);
-    this.cars = this.cars.filter(e => screenX(e.worldX) > -100 && screenX(e.worldX) < CONFIG.VW + 200);
+    // Ojo: los autos nacen en el horizonte (screenX ~1000). Si el límite
+    // superior es menor a eso se eliminan en el mismo frame sin verse.
+    this.cars = this.cars.filter(e => screenX(e.worldX) > -100 && screenX(e.worldX) < CONFIG.VW + 1100);
     this.pedestrians = this.pedestrians.filter(e => screenX(e.worldX) > -60);
     this.potholes = this.potholes.filter(e => e.worldX > cut);
     this.coins = this.coins.filter(e => e.worldX > cut);
@@ -289,8 +304,9 @@ const Game = {
       }
     }
 
-    // ---- Autos ----
+    // ---- Autos (sólo lastiman al personaje cuando va por la calle) ----
     for (const car of this.cars) {
+      if (p.lane !== 1) break;
       if (p.invincible > 0) break;
       if (rectOverlap(hb, car.hitbox())) {
         p.takeDamage(CONFIG.CAR_DAMAGE);
@@ -410,11 +426,15 @@ const Game = {
     for (const e of this.poops) e.draw(ctx);
     for (const e of this.pigeons) e.draw(ctx);
 
-    // autos
-    for (const e of this.cars) e.draw(ctx);
-
-    // jugador
-    this.player.draw(ctx);
+    // autos y jugador: en la vereda de arriba la camioneta (techo) pasa por delante
+    // del personaje; en la calle o la vereda inferior el personaje va por delante.
+    if (this.player.lane === 0) {
+      this.player.draw(ctx);
+      for (const e of this.cars) e.draw(ctx);
+    } else {
+      for (const e of this.cars) e.draw(ctx);
+      this.player.draw(ctx);
+    }
 
     // garrapiñadas lanzadas (por encima de todo)
     for (const g of this.garrapinadas) g.draw(ctx);

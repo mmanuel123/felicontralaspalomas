@@ -202,46 +202,56 @@ function buildPlayer(scale) {
 const P_PIGEON = {
   W: '#cfd6df', w: '#aab2bc', // cuerpo gris
   D: '#4e5a66', d: '#39434e', // ala
+  I: '#6a5a8a',               // brillo iridiscente del cuello
   O: '#ff9a3c',               // pico
   E: '#20242e',               // ojo
   R: '#b23a3a',               // patas
 };
-// Paloma (13x7, mirando hacia la izquierda): cabeza con pico y ojo,
-// cuerpo redondeado, ala y cola. Escala 2 => 26x14px (más chica que la cabeza del personaje).
-const PIGEON_A = [
-  '....WWW......',
-  '...WWWWWW....',
-  '..OEWWWWWW...',
+// Paloma (13x7, mirando hacia la izquierda, escala 2 => 26x14px).
+// 3 frames de aleteo (ala arriba / planeo / ala abajo) + acuclillada + muerta.
+const PIGEON_F0 = [  // planeo (ala al medio)
+  '....OWW......',
+  '...EWWWWW....',
+  '..IWWWWWWWWW.',
   '..WWDDDDDWW..',
   '.WWWWWWWWWWW.',
-  '..RRW...WR...',
-  '...W.....W...',
+  '..RWWW...WWR.',
+  '...W.......W.',
 ];
-const PIGEON_B = [
-  '...WWWWW.....',
-  '..WWWWWWWW...',
-  '.OEWWWWWWWW..',
-  '.WWDDDDDDWW..',
-  '..WWWWWWWW...',
-  '..RRW...WR...',
-  '...W.....W...',
-];
-const PIGEON_SQUAT = [
-  '....WWW......',
-  '...WWWWWW....',
-  '..OEWWWWWWW..',
+const PIGEON_F1 = [  // alas arriba (ala levantada)
+  '....OWW......',
+  '...EWWWWW....',
+  '..IWDddddWWW.',
   '..WWWWWWWWW..',
   '.WWWWWWWWWWW.',
-  '..RRWWWWWWR..',
+  '..RWWW...WWR.',
+  '...W.......W.',
+];
+const PIGEON_F2 = [  // alas abajo (ala baja)
+  '....OWW......',
+  '...EWWWWW....',
+  '..IWWWWWWWWW.',
+  '.WWWWWWWWWWW.',
+  '..WWDDDDDWW..',
+  '..RWWW...WWR.',
+  '...W.......W.',
+];
+const PIGEON_SQUAT = [
+  '....OWW......',
+  '...EWWWWW....',
+  '..IWWWWWWWW..',
+  '..WWWWWWWWWWW',
+  '.WWDDDDDWWWW.',
+  '..RWWWWWWW.R.',
   '.....WW......',
 ];
 const PIGEON_DEAD = [
-  '....WWWWW....',
-  '..WWWWWWWWW..',
-  '.WWWDDDDDWWW.',
-  '.WWWWWWWWWWW.',
-  '..WWWWWWWWW..',
-  '...RRWWWWR...',
+  '...OWWWWW....',
+  '..EWWWWWWWW..',
+  '.IWWWWWWWWWW.',
+  '.WWDDDDDDWWWW',
+  '..WWWWWWWWWW.',
+  '..RW....WWR..',
   '...W.....W...',
 ];
 
@@ -250,46 +260,85 @@ const PIGEON_DEAD = [
 // Colores reales de las fotos: Amarok amarilla (#f7c901),
 // Ford Falcon gris oscuro con techo claro.
 // ============================================================
-// VW Amarok — pick-up amarilla (50x19, mirando a la izquierda).
-// Diseño en píxeles más finos (escala 4 => 200x80px).
-const P_AMAROK = {
-  A: '#0d0f16',   // contorno / bajos
-  B: '#1b1e26',   // borde de carga
-  C: '#8a5a2f',   // carga en la caja
-  D: '#2a2e36',   // bajos
-  G: '#2f3a52',   // vidrio
-  h: '#ffe05a',   // brillo del techo
-  K: '#14161c',   // ruedas
-  L: '#f2e9d0',   // faro delantero
-  M: '#c9cdd4',   // paragolpes/metal
-  T: '#d85040',   // luz trasera
-  W: '#d6dcec',   // reflejo del vidrio
-  Y: '#f7c901',   // carrocería amarilla
-  y: '#a17f00',   // sombra amarilla
+
+
+// VW Amarok realista (perfil, mirando a la izquierda) — convertida del
+// ASCII de referencia (112x50, recortada a contenido, escala 2 => ~214x98px).
+const P_AMAROK_REAL = {
+  A: '#020101',
+  B: '#190E01',
+  C: '#0E0E11',
+  D: '#2D2101',
+  E: '#1B1B20',
+  F: '#292A2F',
+  G: '#4B3C02',
+  H: '#691F1F',
+  I: '#363944',
+  J: '#333E58',
+  K: '#746001',
+  L: '#50545E',
+  M: '#967901',
+  N: '#B29208',
+  O: '#CDA902',
+  P: '#8B8F95',
+  Q: '#F6C802',
+  R: '#F7D131',
+  S: '#FAD749',
+  T: '#BEBFBF',
 };
-const AMAROK = [
-  '..................................................',
-  '..................................................',
-  '..................................................',
-  '....................YhhhhhhhhhY...................',
-  '...................YGYYYYYYYYYYY..................',
-  '..................YGGYYYYYYYYYYYG.................',
-  '.............MM..YGGGGGGGGYGGGGGGG.....CCCCCCC....',
-  '................YGGGYGGWWWYWWGGGGGG....CCCCCCC....',
-  '...............YGGGYYGWWWWYGGGGGGGG....CCCCCCC....',
-  '..............GGGGYYYGGGGGYGGGGGGGGG...CCCCCCC....',
-  '.YYYYYYYYYYYYKYYYYYYyYYYYYYYYYYYYyYKYYBBBBBBBBBB..',
-  '.YYYYYYYYYKKKKKKKYYYyYMMYYYYYMMYKKKKKKKyyyyyyyyY..',
-  'MLLYYYYYYKKKKKKKKKYYyYMMYYYYYMMKKKKKKKKKyyyyyyyTT.',
-  'MLLYYYYYYKKKKKKKKKYYyYYYYYYYYYYKKKKKKKKKyyyyyyyTTY',
-  'MyyyyyyyyKKKMMMKKKyyyyyyyyyyyyyKKKMMMKKKyyyyyyyyyY',
-  'MyyyyyyyKKKKMMMKKKKyyyyyyyyyyyKKKKMMMKKKKyyyyyyMMY',
-  'MYYYYYYYYYKKMMMKKMMMMMMMMMMMMMMYKKMMMKKyyyyyyyyMMY',
-  '......DDDDDKKKKKDDDDDDDDDDDDDDDDDKKKKKDDDDDDD.....',
-  '............KKK...................KKK.............',
+const AMAROK_REAL = [
+  '........................................AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA....................................',
+  '...................................AAAAAQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQAAAAAAA.............................',
+  '................................AAAQQQQQQQQQQQQQQQQQQQQQAAAAAAAAAAAAAAAAAAAAAQODSSLA............................',
+  '..............................AAMQAAAAAAAAAAAAAAAAAAQQQAQQQQQQQQQAOQQQQQQQQQODQMMQQBA...........................',
+  '.............................AAQAAIJJJJJJJJJJJJJJJJANQBQQAAAAAAAAADAAAAAAAAKQQNNGQQQGA..........................',
+  '............................AGBAIJJJJJJJJJJJJJJJJJJAQBQAAJJJJJJJAIIAJJJJJJFAMQOKKQQQGAA.........................',
+  '...........................ADMAJJJJJJJJJJJJJJJJJJJAQBQAJJJJJJJJJAIAEJJJJJJJAIOQGNKQQQAA.........................',
+  '..........................ABKAJJJJJJJJJJJJJJJJJJJAQQQAJJJJJJJJJJAIAEJJJJJJJAJBQKMKQQQQBA........................',
+  '.........................ABKAJJJJJJJJJJJJJJJJJJJCAQMAJJJJJJJJJJJJAEIEJJJJJJAJAQAQKQQQQKA........................',
+  '........................ABKAJJJJJJJJJJJJJJJJJJJCAQKQJJJJJJJJJJJJJAEIAJJJJJJAJAQAQKMQQQQAA.......................',
+  '.......................ABKAJJJJJJJJJJJJJJJJJJJJAQDQAJJJJJJJJJJJJJAIAAJJJJJJEJAQQQKMQQQQGA.......................',
+  '.....................AABMAJJJJJJJJJJJJJJJJJJJJADQBQAJEAAACJJJJJJJAIAEJJJJJJJAJAQMQAQQQQQBA......................',
+  '....................AAAKAJJJJJJJJJJJJJJJJJJJJJGQQQBACDGKGDFJJJJJJAIAEJJJJJJJAJAQAQAOOOOOBAA.....................',
+  '....................AAKAJJJJJJJJJJJJJJJJJJJJJAQQDQAAAQQQQMAJJJJJJAIAIJJJJJJJAJASAQANNNNNNMAAAAAAAAAAAAAAAAAA....',
+  '................AAAAAAAAIJJJJJJJJJJJJJJJJIIAAQQQMQAAQQQQQMAJJJJJJAIAIAJJJJJJAASSAQAQQQQQQQQQQQQQQQQOBBBBBBBAC...',
+  '............AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQQQQKQAAQQQQMMAJJJJJFAFAEAJJJJJAAASSAQAQQQQQQQQQQQQQQQQQQQQQQQQAAL..',
+  '........AAAAAAAAKQQQQQQQQQQQQQQQQQQQQQQMMMMBQQQQMQAAMMMMMMAAAAAAAAAAAAAAAAAASSSQAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAP.',
+  '.....LAAAAAADQQQQQQQQQQQQQQQQQQQQMMMMMMMMBAQQQQQDQAAAAAAABSSSSSSSSSGNSSSSSSSSSSQMKKNSSSSSSSSSSSSSSSSSSSSSSSSSAP.',
+  '...EAAAADQQQQQQQQQQQQQQQQQQQMMMMMMMDAAAAASSSSSSSASSMMMMSSSSSSSSSSSSSASSSSSSSRQQQMKKNQQQQQQQQQQQQQQQQQQQQQQQQQAT.',
+  '..LBABQQQQQQQQQQQQQQQQQMMMMMMMMGAAASSSSSSSSSSSSSSASSMMMMSQQQQQQQQQQQAQQQQQQQQQAQMKKNQKAAAQQQQQQQQQQQQQQQQQQQQAA.',
+  '.TIAQQQQQQQQQQQQQQQQQQMMMMMMDAASSSSSSSSSSQQQQQRRQAQQQQQQQQQQQQQQAAQQAQQQQQQQQQKQGKKNGKQQDGQQQQQQQQQQQQQQQQQQAAA.',
+  '.PAAAAAAAAAAAAAAAAAAAAAAAAAAAKSRQQQQQQQQQQQQQQPPQAQQQQQQQQQQQQQBAABQAQQQQQQQQAAAAKKNGKQQAAAAAAAAAQQQQQQQQQQQAHA.',
+  '.AIIAAAAAPAAAAAAAAAAAILMIIIIAOQQQOAAAAAAAAAAQQQQQAQQQQQQQQQQQQQQAAQQAQQQQQQQQQOQKGGNGAAAARRRRRRRRAAQQQQQMMMMAHA.',
+  '.AITALLAATTAALLLLLLAIILILPPFKQQQAARRRRRRRRRRAAQQQAQQQQQQQQQQQQQQQQQQAQQQQQQQMMMMKGBAAARRRRRRRRRRRRRGMMMMMMMMAHA.',
+  '.AITACEATAATCCCCCCAAIIPPIPPARQDARRRRRRRRRRRRRAAQQAQQQQQQQMMMMMMMMMMMAMMMMMMMMMMMDKAANRRRRNNNNNNNNRQAMMMMMMMMAHA.',
+  '.APIAAAALLLLAAAAAAAIIILIIIEAAAANSRRNNNNNNNNNRRAMMAMMMMMMMMMMMMMMMMMMAMMMMMMMMMMMAMANRRNMMMMMMMMMMMQQAMMMMMMMAHA.',
+  'AAFTALLLATTAALLLLLATTTTTTAARQKKGOMMMMMMMMMMMMQQAMAMMMMMMMMMMMMMMMMMMAMMMMMMMMMMMGGANROMMBAAAAAAABMMQAMMMMMMMAHA.',
+  'ARAAAAAAAAAAAAAAAAAAAAAAABSQQMKQKMMAAAAAAAAGMMQAMAMMMMMMMMMMMMMMMMMAMMMMMMMMMMMMGGDQQMKAAAAAAAAAAAMMAMMMMMMMAHA.',
+  'AQSSSSSSSSSSSSSSSSSSSSSSRQQQQKQQMBAAAAAAAAAAAMMAMAMMMMMMMMMMMMMMMMMAMMMMMMMMMMMKDGMQNMDAAAAAAAAAAAMMQAMMMMMMAAA.',
+  'AQQQQPTTTTTTTTQQQQQQQQQQQQQQNKQOMAAAAAAAAAAAAMMQAAMMMMMMMMMMMMMMMMMAMMMMMMMMMMMKMAMQMMAAAAAAAAAAAAAMQAMMMMMMMGP.',
+  'AQQQQPTTTTTTTTQQQQQQQQQQQQQQNKQNKAAAAAAAAAAAAAMQAAMMMMMMMMMMMMMMMMMAQQQQQQQQQQQAQAQQMGAAAAAAAAAAAAAMMAQQQQQQQQA.',
+  'AAAAAAAAAAAAAAAAAAAAAAAAAAQQAQQMDAEEEELLLAAAAAMMOAMMMMQQQQQQQQQQQQQQAQQQQQQQQQQAQAQQMGAEEEELLLAAAAAMMQAMMMMMMALA',
+  'AFAAEEEEEEEEEEEECAEAIICFIAKQAQQMDEEEFFFFFFIAAAMMQAQQQQQQQQQQQMMMMMMMAMMMMMMMMMMAMAMMMBEEEFFFFFFIAAAAMMAMMMMMMALA',
+  'AFEAAAAAAAAAAAAAAALAIIATPEKQAQOMCEEFFFFFFFFLAAAMMAMMMMMMMMMMMMMMMMMMAMMMMMMMMMMAGGMMDCEEFFFFFFFFLAAAMMAMMMMMMALA',
+  'AFELLLLLLLLLLLLLLIAFIIIAIDQAQQODCEFFFFAAAFFFLAAMMAMMMMMMMMMMMMMMMMMMAMMMMMMMMMMDKGMMDCEFFFFAAAFFFLAAMMAMMMMMALLA',
+  'AAAAAAAAAAAAAAAAAAAAAAAADQQAQQMDEEFFFELLLCFFFAAMMAMMMMMMMMMMMMMMMMMKGMMMMMMMMMDGGMMMBEEFFFELLLEFFFAAMMAMMMMMALCA',
+  'ANOOOOOOOOOOOOOOOOOOOOOOQQQAQOMBCFFFFLLLLLAFFFAMMAABBBBBBBBBBBBBBBBAABBBBBBBBDMKDMMDCEFFFELLLLLCFFFAMMAABBBBAAA.',
+  'AQBBBBBBBBBBBBBBBBBBQQQQQQQAQOGCEFFFLLLLLLLEFFAMMADKKKKKKKKKKKKKKKKKKKKKKKKKKMMADMMDCEFFFLLLLLLLAFFAABAAAAAAAAT.',
+  'AMADDDDDDDDDDDDDDDDDKNQOOOGGQMGCFFALLLLILLLAFFAMMAMMMMMMMMMMMMMMMMMMMMMMMMMMMMMAMMMDCEFCLLLLILLLAFFAAAL.........',
+  'AAAMMMMMMMMMMMMMMMMMMGMMMMGMMMBEFFALLLFAILLAFFAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMKCEEFCLLLEAFLLAFFAC...........',
+  '.AAMMMMMMMMMMMMMMMMMMAAKMMAMMBEEFFALLALLALLAFFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEEFFCLLALLALLAFFAA...........',
+  '.PAAAAAAAAAAAAAAAAAAAAAAAAAAAEEEFFALLLLLCLLAFFAALLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLACEEFFCLLLILALLAFFAA...........',
+  '...EAEEEEAAAEEEEEEEEEEEEEEEACEEEFFALLLIALLLAFFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACEEEFCLLLLALLLAFFAA...........',
+  '...FAEEEEAAAAAAAAAAAAAAAAAAACEEEEFEFLLLLLLLAFFAA.........LAEEEEAAAAAAAAAAAAAAAAA.ACEEEFFELLLLLLLAFFAC...........',
+  '...EAEEEEAAAAAAAAAAAAA.....AAEEEAFFEFLLLLLAFFAF..........LAEEEEAAAAAAAAAAAAA.....AAEECEFEFLLLLLAFFAA............',
+  '....CAEEEAAAAAAAAAAAAA......ACEEEEFFCLLLLAFFFAF...........EAEEEAAAAAAAAAAAAA......ACEECFFFFLLLAFFFAA............',
+  '....CAEEEEAAAAAAAAAAA.......ACEEECEFFAAAAFFFFAL...........EAEEEEAAAAAAAAAAA.......ACEEEEFFCAAAFFFFAA............',
+  '.....PAEEEEAAAAAAAAA.........ACEEEAFFFFFFFFFAA.............CAEEEEAAAAAAAAA.........ACEECEFFFFFFFFAA.............',
+  '......EAAEEEAAAAAAA...........AAEEEAEFFFFFAAA...............IAAEEEAAAAAAA...........ACEEAFFFFFFAAA..............',
+  '........AAAAAAAAAA..............AAAAAAAAAAA...................CAAAAAAAAA.............AAAAAAAAAAA................',
 ];
 
-// Ford Falcon — sedán clásico gris con techo claro (52x18, mirando a la izquierda).
 const P_FALCON = {
   C: '#8a5a2f',   // óxido
   c: '#592c19',   // óxido oscuro
@@ -329,11 +378,11 @@ const FALCON = [
 function buildCars(scale) {
   const OUTLINE = '#10131c';
   const falconL = makeSprite(FALCON, P_FALCON, scale, OUTLINE);
-  const amarokL = makeSprite(AMAROK, P_AMAROK, scale, OUTLINE);
+  const amarokL = makeSprite(AMAROK_REAL, P_AMAROK_REAL, scale);
   SPR.carLeftFalcon = falconL;
   SPR.carLeftAmarok = amarokL;
   SPR.carRightFalcon = makeSprite(flipRows(FALCON), P_FALCON, scale, OUTLINE);
-  SPR.carRightAmarok = makeSprite(flipRows(AMAROK), P_AMAROK, scale, OUTLINE);
+  SPR.carRightAmarok = makeSprite(flipRows(AMAROK_REAL), P_AMAROK_REAL, scale);
 }
 
 // ============================================================
@@ -348,47 +397,137 @@ const P_PED2 = {
 const P_PED3 = {
   H: '#8a5a2f', S: '#e8b88c', E: '#20242e', T: '#4a7ad0', P: '#4a4a5a', R: '#20242e',
 };
-// Caminando (16x18, escala 3 => 48x54px): cabeza con pelo y ojo,
-// remera con mangas y manos, pantalón y zapatos. Frame A/B = zancada.
-const PEDESTRIAN_A = [
+// Mujer: pelo largo (coleta), remera y pollera
+const P_PED4 = {
+  H: '#5a2a3a', S: '#e8b88c', E: '#20242e', T: '#e0608a', P: '#4a4a5e', R: '#20242e',
+};
+// Deportivo: buzo con capucha y zapatillas claras
+const P_PED5 = {
+  H: '#20242e', S: '#d9a05b', E: '#20242e', T: '#2f9e44', P: '#4a4a5a', R: '#e8eef2',
+};
+// Caminando (16x18, escala 3 => 48x54px): cabeza con pelo y ojo, remera
+// con brazos que se balancean en oposición a las piernas. Ciclo de 3 pasos:
+// A=contacto, B=paso intermedio, C=contacto invertido.
+const PED_A = [
   '.......HHHH.....',
   '......HHHHHH....',
-  '......HHHHHH....',
-  '.....HSSSSSSH...',
-  '.....HSSSSSSH...',
-  '.....HSSESSSH...',
-  '.....HSSSSSSH...',
-  '.....HSSSSSSH...',
-  '......HSSSH.....',
+  '......HSSSSSH...',
+  '......HSSESSH...',
+  '.......SSSSS....',
+  '......TTTTTTTT..',
+  '.....TTTTTTTTTT.',
+  '..SS.TTTTTTTTT..',
+  '....TTTTTTTTT...',
   '.....TTTTTTTT...',
-  '....TTTTTTTTTT..',
-  '.SSTTTTTTTTTTSS.',
-  '.SSTTTTTTTTTTSS.',
   '....PPPPPPPP....',
-  '...PPPP..PPPP...',
-  '...PP......PP...',
-  '..RR......RR....',
-  '..RR......RR....',
+  '...PP....PPP....',
+  '..PP.......PP...',
+  '..PP.......PP...',
+  '.RR........RR...',
+  '.RR........RR...',
+  '.RR........RR...',
+  '.RR........RR...',
 ];
-const PEDESTRIAN_B = [
+const PED_B = [
   '.......HHHH.....',
   '......HHHHHH....',
-  '......HHHHHH....',
-  '.....HSSSSSSH...',
-  '.....HSSSSSSH...',
-  '.....HSSSESSSH..',
-  '.....HSSSSSSH...',
-  '.....HSSSSSSH...',
-  '......HSSSH.....',
+  '......HSSSSSH...',
+  '......HSSESSH...',
+  '.......SSSSS....',
+  '......TTTTTTTT..',
+  '.....TTTTTTTTTT.',
+  '..S..TTTTTTTTT..',
+  '..S..TTTTTTTT...',
   '.....TTTTTTTT...',
-  '....TTTTTTTTTT..',
-  '.SSTTTTTTTTTTSS.',
-  '.SSTTTTTTTTTTSS.',
   '....PPPPPPPP....',
-  '...PPPP...PP....',
-  '..PP........PP..',
-  '.RR.........RR..',
-  '.RR.........RR..',
+  '....PPPPPPPP....',
+  '....PPP..PPP....',
+  '....PPP..PPP....',
+  '....RR....RR....',
+  '....RR....RR....',
+  '....RR....RR....',
+  '....RR....RR....',
+];
+const PED_C = [
+  '.......HHHH.....',
+  '......HHHHHH....',
+  '......HSSSSSH...',
+  '......HSSESSH...',
+  '.......SSSSS....',
+  '......TTTTTTTT..',
+  '.....TTTTTTTTTT.',
+  '.....TTTTTTTT.S.',
+  '.....TTTTTTT.S..',
+  '.....TTTTTTTT...',
+  '....PPPPPPPP....',
+  '....PPP...PP....',
+  '...PP.......PP..',
+  '...PP.......PP..',
+  '..RR........RR..',
+  '..RR........RR..',
+  '..RR........RR..',
+  '..RR........RR..',
+];
+// Mujer caminando (coleta atrás + pollera)
+const WOMAN_A = [
+  '.......HHHH.....',
+  '......HHHHHH....',
+  '......HSSSSSH...',
+  '......HSSESSH...',
+  '...HH..SSSSS....',
+  '...HH.TTTTTTTT..',
+  '......TTTTTTTTTT.',
+  '..SS.TTTTTTTTT..',
+  '....TTTTTTTTT...',
+  '.....TTTTTTTT...',
+  '....PPPPPPPPPP..',
+  '...PPPPPPPPPPPP.',
+  '...PPPPPPPPPPPP.',
+  '...PP.......PP..',
+  '..RR........RR..',
+  '..RR........RR..',
+  '..RR........RR..',
+  '..RR........RR..',
+];
+const WOMAN_B = [
+  '.......HHHH.....',
+  '......HHHHHH....',
+  '......HSSSSSH...',
+  '......HSSESSH...',
+  '...HH..SSSSS....',
+  '...HH.TTTTTTTT..',
+  '......TTTTTTTTTT.',
+  '..S...TTTTTTTTT..',
+  '..S...TTTTTTTT...',
+  '.....TTTTTTTT...',
+  '....PPPPPPPPPP..',
+  '...PPPPPPPPPPPP.',
+  '...PPPPPPPPPPPP.',
+  '....PPP..PPP....',
+  '....RR....RR....',
+  '....RR....RR....',
+  '....RR....RR....',
+  '....RR....RR....',
+];
+const WOMAN_C = [
+  '.......HHHH.....',
+  '......HHHHHH....',
+  '......HSSSSSH...',
+  '......HSSESSH...',
+  '...HH..SSSSS....',
+  '...HH.TTTTTTTT..',
+  '......TTTTTTTTTT.',
+  '.....TTTTTTTT.S.',
+  '.....TTTTTTT.S..',
+  '.....TTTTTTTT...',
+  '....PPPPPPPPPP..',
+  '...PPPPPPPPPPPP.',
+  '...PPPPPPPPPPPP.',
+  '...PP.......PP..',
+  '..RR........RR..',
+  '..RR........RR..',
+  '..RR........RR..',
+  '..RR........RR..',
 ];
 
 // ============================================================
@@ -492,21 +631,20 @@ const LAMP = [
   '......P.......',
 ];
 
-// Bolsita de garrapiñadas (papel con tapa plegada)
+// Tubo de garrapiñadas (cilindro chico con maníes de caramelo marrón)
 const P_GARRAPIÑADA = {
-  W: '#efe6d0', P: '#c9922f', p: '#a8761f', K: '#3a2a1a',
+  W: '#efe6d0', M: '#a05a2a', m: '#7a3f1c', b: '#c9833f', K: '#3a2a1a',
 };
 const GARRAPIÑADA_BAG = [
   '..KKKK..',
   '.KWWWWK.',
+  '.KMMbMK.',
+  '.KMmMMK.',
+  '.KmMMMK.',
+  '.KMMbMK.',
+  '.KMmMMK.',
   '.KWWWWK.',
-  '.KPPPPK.',
-  '.KPPPPK.',
-  'KPPPPPPK',
-  'KPpPPPPK',
-  'KPPpPPPK',
-  'KPPPPPPK',
-  '.KKKKKK.',
+  '..KKKK..',
 ];
 
 // Piedrita / garrapiñada (proyectil)
@@ -525,19 +663,19 @@ const GARRAPIÑADA_PELLET = [
 function initSprites() {
   buildPlayer(2);
   SPR.pigeon = [
-    makeSprite(PIGEON_A, P_PIGEON, 2),
-    makeSprite(PIGEON_B, P_PIGEON, 2),
+    makeSprite(PIGEON_F0, P_PIGEON, 2),
+    makeSprite(PIGEON_F1, P_PIGEON, 2),
+    makeSprite(PIGEON_F2, P_PIGEON, 2),
     makeSprite(PIGEON_SQUAT, P_PIGEON, 2),
     makeSprite(PIGEON_DEAD, P_PIGEON, 2),
   ];
   buildCars(4);
   SPR.pedestrians = [
-    makeSprite(PEDESTRIAN_A, P_PED1, 3),
-    makeSprite(PEDESTRIAN_B, P_PED1, 3),
-    makeSprite(PEDESTRIAN_A, P_PED2, 3),
-    makeSprite(PEDESTRIAN_B, P_PED2, 3),
-    makeSprite(PEDESTRIAN_A, P_PED3, 3),
-    makeSprite(PEDESTRIAN_B, P_PED3, 3),
+    makeSprite(PED_A, P_PED1, 3), makeSprite(PED_B, P_PED1, 3), makeSprite(PED_C, P_PED1, 3),
+    makeSprite(PED_A, P_PED2, 3), makeSprite(PED_B, P_PED2, 3), makeSprite(PED_C, P_PED2, 3),
+    makeSprite(PED_A, P_PED3, 3), makeSprite(PED_B, P_PED3, 3), makeSprite(PED_C, P_PED3, 3),
+    makeSprite(WOMAN_A, P_PED4, 3), makeSprite(WOMAN_B, P_PED4, 3), makeSprite(WOMAN_C, P_PED4, 3),
+    makeSprite(PED_A, P_PED5, 3), makeSprite(PED_B, P_PED5, 3), makeSprite(PED_C, P_PED5, 3),
   ];
   SPR.pothole = makeSprite(POTHOLE, P_POTHOLE, 4);
   SPR.coins = [
@@ -549,6 +687,6 @@ function initSprites() {
   SPR.stand = makeSprite(STAND, P_STAND, 4);
   SPR.tree = makeSprite(TREE, P_TREE, 4);
   SPR.lamp = makeSprite(LAMP, P_LAMP, 4);
-  SPR.garrapinada = makeSprite(GARRAPIÑADA_BAG, P_GARRAPIÑADA, 4);
+  SPR.garrapinada = makeSprite(GARRAPIÑADA_BAG, P_GARRAPIÑADA, 3);
   SPR.garrapinadaPellet = makeSprite(GARRAPIÑADA_PELLET, P_PELLET, 2);
 }

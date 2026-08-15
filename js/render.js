@@ -2,7 +2,7 @@
 // render.js — Dibujo de la escena urbana (estilo 16-bit / Sega)
 // ============================================================
 
-// Paletas por momento del día: día (ALSINA), tardecita (BELGRANO), noche (LAS HERAS)
+// Paletas por momento del día: día (LAS HERAS), tardecita (BELGRANO), noche (ALSINA)
 const THEMES = {
   day: {
     sky: [

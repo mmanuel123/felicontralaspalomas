@@ -1,5 +1,5 @@
 // ============================================================
-// level.js — Generación del Nivel 1: ALSINA
+// level.js — Generación del Nivel 1: LAS HERAS
 // Genera el mundo por delante de la cámara con dificultad
 // progresiva, usando un RNG con semilla para que el recorrido
 // sea siempre el mismo.

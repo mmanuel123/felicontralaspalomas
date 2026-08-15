@@ -54,8 +54,8 @@ const CONFIG = {
   GARRAPIÑADA_BAG_COUNT: 10,     // garrapiñadas por paquete (limitadas)
   GARRAPIÑADA_SPAWN_X: 2600,     // distancia del mundo donde aparece el paquete
   GARRAPIÑADA_THROW_COOLDOWN: 0.35, // segundos entre lanzamientos
-  GARRAPIÑADA_SPEED: 460,        // velocidad del proyectil hacia adelante
-  GARRAPIÑADA_GRAVITY: 260,      // arco leve al caer
+  GARRAPIÑADA_SPEED: 420,        // velocidad del proyectil hacia adelante
+  GARRAPIÑADA_GRAVITY: 280,      // arco leve al caer
 
   // Peatones
   PEDESTRIAN_SPEED: 40,
@@ -63,11 +63,11 @@ const CONFIG = {
   // Niveles — cada uno es una calle de Bahía Blanca con sus locales
   LEVELS: [
     {
-      name: 'ALSINA',
+      name: 'LAS HERAS',
       length: 14000,                // distancia en px hasta completar
       speed: 1.00,                  // multiplicador de velocidad del nivel
       theme: 'day',                 // día
-      stores: ['LIBRERIA DON BOSCO', 'PIZZA PEPITO', 'COOPERATIVA OBRERA'],
+      stores: ['FARMACIA ESPAÑOLA', 'PANADERIA LA NUEVA SIRENA', 'ESTACIONAMIENTO'],
     },
     {
       name: 'BELGRANO',
@@ -77,14 +77,14 @@ const CONFIG = {
       stores: ['CASA MUÑIZ', 'COOPERATIVA OBRERA', 'GALERIA BORGANI'],
     },
     {
-      name: 'LAS HERAS',
+      name: 'ALSINA',
       length: 18000,
       speed: 1.16,
       theme: 'night',               // noche
-      stores: ['FARMACIA ESPAÑOLA', 'PANADERIA LA NUEVA SIRENA', 'ESTACIONAMIENTO'],
+      stores: ['LIBRERIA DON BOSCO', 'PIZZA PEPITO', 'COOPERATIVA OBRERA'],
     },
   ],
-  LEVEL_NAME: "ALSINA",              // valor por defecto (nivel 1)
+  LEVEL_NAME: "LAS HERAS",            // valor por defecto (nivel 1)
   LEVEL_LENGTH: 14000,               // valor por defecto (nivel 1)
   LEVEL_START_DIFFICULTY: 0,
   LEVEL_MAX_DIFFICULTY: 10,
