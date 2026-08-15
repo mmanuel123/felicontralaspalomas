@@ -81,6 +81,7 @@ const AudioSys = {
   buy() { this.tone(660, 0.1, 'square', 0.13); this.tone(990, 0.15, 'square', 0.13, 0.09); },
   eat() { this.tone(330, 0.08, 'triangle', 0.14); this.tone(440, 0.08, 'triangle', 0.14, 0.08); this.tone(550, 0.12, 'triangle', 0.14, 0.16); },
   death() { this.tone(400, 0.6, 'sawtooth', 0.18, 0, 40); this.tone(200, 0.8, 'square', 0.15, 0.2, 30); },
+  lifeUp() { this.tone(523, 0.12, 'square', 0.13); this.tone(659, 0.12, 'square', 0.13, 0.1); this.tone(784, 0.12, 'square', 0.13, 0.2); this.tone(1047, 0.25, 'square', 0.14, 0.3); },
   levelUp() { [523, 659, 784, 1047].forEach((f, i) => this.tone(f, 0.15, 'square', 0.13, i * 0.12)); },
 
   // ---- Música retro simple (secuencia looping) ----

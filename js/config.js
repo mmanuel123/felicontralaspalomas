@@ -28,6 +28,11 @@ const CONFIG = {
   // Recuperación
   CUBANITO_HEAL: 50,
 
+  // Vidas
+  PLAYER_START_LIVES: 3,
+  MAX_LIVES: 5,
+  COINS_PER_LIFE: 100,            // cada 100 monedas ganadas = +1 vida
+
   // Monedas
   PIGEON_COIN_REWARD: 1,
   COIN_VALUE: 1,
@@ -42,6 +47,8 @@ const CONFIG = {
   // Autos
   CAR_BASE_SPEED: 160,
   CAR_MAX_SPEED: 340,
+  CAR_START_X: 1400,             // sin autos antes de esta distancia (arranque tranquilo)
+  CAR_MIN_GAP: 650,              // separación mínima entre autos consecutivos
 
   // Peatones
   PEDESTRIAN_SPEED: 40,
@@ -52,18 +59,21 @@ const CONFIG = {
       name: 'ALSINA',
       length: 14000,                // distancia en px hasta completar
       speed: 1.00,                  // multiplicador de velocidad del nivel
+      theme: 'day',                 // día
       stores: ['LIBRERIA DON BOSCO', 'PIZZA PEPITO', 'COOPERATIVA OBRERA'],
     },
     {
       name: 'BELGRANO',
       length: 16000,
       speed: 1.08,
+      theme: 'dusk',                // tardecita
       stores: ['CASA MUÑIZ', 'COOPERATIVA OBRERA', 'GALERIA BORGANI'],
     },
     {
       name: 'LAS HERAS',
       length: 18000,
       speed: 1.16,
+      theme: 'night',               // noche
       stores: ['FARMACIA ESPAÑOLA', 'PANADERIA LA NUEVA SIRENA', 'ESTACIONAMIENTO'],
     },
   ],

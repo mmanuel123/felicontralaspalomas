@@ -19,11 +19,13 @@ const LevelGen = {
   rng: null,
   nextSpawnX: 0,
   HORIZON: 1000,       // cuántos px por delante generamos
+  lastCarX: 0,
   sections: 0,
 
   init(seed) {
     this.rng = mulberry32(seed || 12345);
     this.nextSpawnX = 200;
+    this.lastCarX = 0;
     this.sections = 0;
     Game.pigeons.length = 0;
     Game.cars.length = 0;
@@ -64,10 +66,12 @@ const LevelGen = {
     }
   },
 
-  spawnCar(x) {
-    // 70% Amarok, 30% Falcon destruido
+  spawnCar(x, difficulty) {
+    // 70% Amarok, 30% Falcon destruido. Más lentos al inicio, van
+    // acelerando a medida que sube la dificultad del nivel.
     const type = this.rng() < 0.7 ? 'amarok' : 'falcon';
-    const speed = CONFIG.CAR_BASE_SPEED + this.rng() * (CONFIG.CAR_MAX_SPEED - CONFIG.CAR_BASE_SPEED);
+    const ramp = Math.min(1, 0.35 + difficulty / 12);   // 0.35..1
+    const speed = CONFIG.CAR_BASE_SPEED + (CONFIG.CAR_MAX_SPEED - CONFIG.CAR_BASE_SPEED) * ramp;
     const dir = this.rng() < 0.75 ? -1 : 1;
     Game.cars.push(new Car(x, speed, dir, type));
   },
@@ -92,16 +96,26 @@ const LevelGen = {
       const d = Game.difficulty;
       const r = this.rng();
 
-      if (r < 0.28 + d * 0.02) {
+      // ventanas fijas para que ninguna desaparezca a dificultad alta:
+      // pozo 28%, paloma 22%, auto 14%, moneda 14%, peatón 10%, decoración 12%
+      if (r < 0.28) {
         this.spawnPotholes(x, d);
         this.nextSpawnX += 90;
-      } else if (r < 0.56 + d * 0.02) {
+      } else if (r < 0.50) {
         this.spawnPigeons(x, d);
         this.nextSpawnX += 110;
-      } else if (r < 0.70 + d * 0.01) {
-        // tráfico: 1-2 autos (muchas Amarok)
-        this.spawnCar(x);
-        if (d > 2 && this.rng() < 0.5) this.spawnCar(x + 250 + this.rng() * 100);
+      } else if (r < 0.64 && x >= CONFIG.CAR_START_X) {
+        // tráfico: nunca antes de la zona de entrada y con separación
+        // mínima entre autos para que no se agolpen ni te dejen sin vida.
+        if (x - this.lastCarX >= CONFIG.CAR_MIN_GAP) {
+          this.spawnCar(x, d);
+          this.lastCarX = x;
+          if (d > 2 && this.rng() < 0.5) {
+            const x2 = x + CONFIG.CAR_MIN_GAP + this.rng() * 150;
+            this.spawnCar(x2, d);
+            this.lastCarX = x2;
+          }
+        }
         this.nextSpawnX += 70;
       } else if (r < 0.78) {
         this.spawnCoins(x, this.rng() < 0.5 ? 0 : 2);

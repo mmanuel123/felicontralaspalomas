@@ -31,6 +31,36 @@ const UI = {
     ctx.fillStyle = '#ffd23c';
     ctx.fillText('x' + Game.player.coins, cx + 12, cy - 2);
 
+    // ---- Vidas (corazones) ----
+    const hx = CONFIG.VW - 108, hy = 12;
+    const filled = '♥'.repeat(Game.lives);
+    const empty = '♡'.repeat(Math.max(0, CONFIG.MAX_LIVES - Game.lives));
+    ctx.font = 'bold 14px monospace';
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 3;
+    ctx.strokeText(filled, hx, hy + 14);
+    ctx.fillStyle = '#e5484d';
+    ctx.fillText(filled, hx, hy + 14);
+    ctx.strokeText(empty, hx + filled.length * 9, hy + 14);
+    ctx.fillStyle = '#6a6a72';
+    ctx.fillText(empty, hx + filled.length * 9, hy + 14);
+
+    // progreso hacia la próxima vida (cada 100 monedas)
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.fillRect(hx - 4, hy + 22, 104, 9);
+    ctx.fillStyle = '#3a3a42';
+    ctx.fillRect(hx - 2, hy + 24, 100, 5);
+    const pc = Game.coinsEarned % CONFIG.COINS_PER_LIFE;
+    ctx.fillStyle = '#ffd23c';
+    ctx.fillRect(hx - 2, hy + 24, Math.max(0, 100 * (pc / CONFIG.COINS_PER_LIFE)), 5);
+    ctx.font = 'bold 8px monospace';
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 2;
+    const ptxt = Game.lives >= CONFIG.MAX_LIVES ? 'MÁXIMO' : pc + '/' + CONFIG.COINS_PER_LIFE;
+    ctx.strokeText(ptxt, hx - 2, hy + 31);
+    ctx.fillStyle = '#ffd23c';
+    ctx.fillText(ptxt, hx - 2, hy + 31);
+
     // ---- Nivel y distancia ----
     const lv = Game.levelIndex + 1;
     const lvName = Game.currentLevel().name;
@@ -82,13 +112,14 @@ const UI = {
     if (b) b.addEventListener('click', () => Game.start());
   },
 
-  showLevelBanner() {
+  showLevelBanner(extra) {
     const lv = Game.levelIndex + 1;
+    const sub = extra || '¡A correr! Esquiva pozos y autos, patea palomas y junta monedas.';
     this.show('', `
       <div class="overlay-box">
         <h1>NIVEL ${lv}</h1>
         <p class="subtitle" style="font-size:22px">${Game.currentLevel().name}</p>
-        <p class="subtitle">¡A correr! Esquiva pozos y autos, patea palomas y junta monedas.</p>
+        <p class="subtitle">${sub}</p>
       </div>
     `);
   },
@@ -104,6 +135,7 @@ const UI = {
         <div class="stats">
           🏃 Distancia: ${dist} m<br>
           🪙 Monedas: ${Game.player.coins}<br>
+          ❤ Vidas: ${Game.lives}<br>
           🏁 Nivel: ${lv} · ${Game.currentLevel().name}
         </div>
         <button class="btn" id="btn-retry">↻ Volver a jugar</button>
@@ -129,6 +161,7 @@ const UI = {
         <div class="stats">
           🏃 Distancia: ${dist} m<br>
           🪙 Monedas: ${Game.player.coins}<br>
+          ❤ Vidas: ${Game.lives}<br>
           🏁 Nivel: ${lv} · ${Game.currentLevel().name}
         </div>
         <button class="btn" id="btn-retry">${last ? '↻ Jugar de nuevo' : '▶ Siguiente nivel'}</button>

@@ -62,7 +62,7 @@ class Pigeon {
     this.dead = true;
     this.deadTimer = 0;
     this.vy = -160;
-    if (reward) Game.player.coins += CONFIG.PIGEON_COIN_REWARD;
+    if (reward) Game.addCoins(CONFIG.PIGEON_COIN_REWARD);
     AudioSys.pigeonHit();
   }
 

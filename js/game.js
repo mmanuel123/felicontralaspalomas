@@ -15,6 +15,8 @@ const Game = {
   buyMsgTime: 0,
   shakeTime: 0,
   levelIndex: 0,               // 0=ALSINA, 1=BELGRANO, 2=LAS HERAS
+  lives: 0,                    // vidas de la partida (3 iniciales, máx 5)
+  coinsEarned: 0,              // monedas ganadas de por vida (nunca baja al gastar)
   pigeons: [],
   poops: [],
   cars: [],
@@ -76,6 +78,8 @@ const Game = {
 
   resetAll() {
     this.levelIndex = 0;
+    this.lives = CONFIG.PLAYER_START_LIVES;
+    this.coinsEarned = 0;
     this.resetWorld(false);
   },
 
@@ -93,7 +97,7 @@ const Game = {
 
   restart() {
     AudioSys.resume();
-    this.resetWorld(false);
+    this.resetAll();             // volver a jugar: vidas y monedas en cero
     this.state = 'banner';
     UI.showLevelBanner();
     setTimeout(() => {
@@ -101,6 +105,22 @@ const Game = {
       UI.hide();
       AudioSys.startMusic();
     }, 1200);
+  },
+
+  // Suma monedas y otorga una vida cada 100 ganadas (máx MAX_LIVES).
+  addCoins(n) {
+    const before = Math.floor(this.coinsEarned / CONFIG.COINS_PER_LIFE);
+    this.coinsEarned += n;
+    this.player.coins += n;
+    const after = Math.floor(this.coinsEarned / CONFIG.COINS_PER_LIFE);
+    for (let i = before + 1; i <= after; i++) {
+      if (this.lives < CONFIG.MAX_LIVES) {
+        this.lives++;
+        this.buyMsg = '¡+1 VIDA! (' + this.lives + '/' + CONFIG.MAX_LIVES + ')';
+        this.buyMsgTime = 1.6;
+        AudioSys.lifeUp();
+      }
+    }
   },
 
   completeLevel() {
@@ -170,7 +190,7 @@ const Game = {
     const cut = this.cameraX - 140;
     this.pigeons = this.pigeons.filter(e => screenX(e.worldX) > -80 && !(e.dead && e.deadTimer > 0.7));
     this.poops = this.poops.filter(e => screenX(e.worldX) > -80 && e.y < 400);
-    this.cars = this.cars.filter(e => screenX(e.worldX) > -100);
+    this.cars = this.cars.filter(e => screenX(e.worldX) > -100 && screenX(e.worldX) < CONFIG.VW + 200);
     this.pedestrians = this.pedestrians.filter(e => screenX(e.worldX) > -60);
     this.potholes = this.potholes.filter(e => e.worldX > cut);
     this.coins = this.coins.filter(e => e.worldX > cut);
@@ -178,8 +198,23 @@ const Game = {
     this.deco = this.deco.filter(e => e.worldX > cut);
 
     if (!p.alive) {
-      this.state = 'gameover';
-      setTimeout(() => UI.showGameOver(), 900);
+      this.lives--;
+      if (this.lives > 0) {
+        // perder una vida: se reinicia el nivel desde el principio,
+        // conservando monedas, vidas y el progreso de +1 vida.
+        this.resetWorld(true);
+        this.state = 'banner';
+        UI.showLevelBanner('¡PERDISTE UNA VIDA! Te quedan ' + this.lives);
+        AudioSys.resume();
+        setTimeout(() => {
+          this.state = 'playing';
+          UI.hide();
+          AudioSys.startMusic();
+        }, 1200);
+      } else {
+        this.state = 'gameover';
+        setTimeout(() => UI.showGameOver(), 900);
+      }
     }
   },
 
@@ -252,7 +287,7 @@ const Game = {
       const cr = { x: screenX(coin.worldX), y: coin.y, w: 40, h: 24 };
       if (rectOverlap(hb, cr)) {
         coin.taken = true;
-        p.coins += CONFIG.COIN_VALUE;
+        Game.addCoins(CONFIG.COIN_VALUE);
         AudioSys.coin();
       }
     }
