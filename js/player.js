@@ -105,13 +105,15 @@ class Player {
     this.stateTime += dt;
     this.animTime += dt;
 
-    // velocidad progresiva
-    const targetSpeed = CONFIG.PLAYER_BASE_SPEED + Math.min(CONFIG.LEVEL_MAX_DIFFICULTY, Game.difficulty) * 12;
-    this.speed = Math.min(CONFIG.PLAYER_MAX_SPEED,
+    // velocidad progresiva (escala con el nivel: más rápido cada calle)
+    const lvlSpeed = (Game.currentLevel().speed || 1);
+    const base = CONFIG.PLAYER_BASE_SPEED * lvlSpeed;
+    const targetSpeed = base + Math.min(CONFIG.LEVEL_MAX_DIFFICULTY, Game.difficulty) * 12;
+    this.speed = Math.min(CONFIG.PLAYER_MAX_SPEED * lvlSpeed,
       this.speed + (targetSpeed - this.speed) * Math.min(1, dt * CONFIG.PLAYER_ACCEL));
     if (this.dangerCooldown > 0) {
       this.dangerCooldown -= dt;
-      if (this.dangerCooldown <= 0) this.speed = CONFIG.PLAYER_BASE_SPEED;
+      if (this.dangerCooldown <= 0) this.speed = base;
     }
     if (this.running) this.distance += this.speed * dt;
 

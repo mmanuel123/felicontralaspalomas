@@ -19,13 +19,11 @@ const LevelGen = {
   rng: null,
   nextSpawnX: 0,
   HORIZON: 1000,       // cuántos px por delante generamos
-  lastStandX: 0,
   sections: 0,
 
   init(seed) {
     this.rng = mulberry32(seed || 12345);
     this.nextSpawnX = 200;
-    this.lastStandX = 0;
     this.sections = 0;
     Game.pigeons.length = 0;
     Game.cars.length = 0;
@@ -38,19 +36,9 @@ const LevelGen = {
     for (let i = 0; i < 6; i++) {
       Game.pedestrians.push(new Pedestrian(300 + i * 220, i % 2 === 0 ? 0 : 2, 20 + this.rng() * 25));
     }
-    // puesto de cubanitos de introducción
-    this.spawnStand(1500);
   },
 
   get difficulty() { return Game.difficulty; },
-
-  spawnStand(x) {
-    const lane = this.rng() < 0.5 ? 0 : 2;
-    const s = new CubanitoStand(x, lane);
-    Game.stands.push(s);
-    Game.coins.push(new Coin(x + 40, CONFIG.LANES[lane].feetY - 46));
-    this.lastStandX = x;
-  },
 
   spawnPotholes(x, difficulty) {
     const lane = this.rng() < 0.5 ? 0 : 2;
@@ -61,10 +49,11 @@ const LevelGen = {
   },
 
   spawnPigeons(x, difficulty) {
-    const count = 1 + Math.floor(this.rng() * Math.min(3, 1 + difficulty / 2));
+    const lvl = Game.levelIndex; // más palomas y más rápidas por nivel
+    const count = 1 + Math.min(2, lvl) + Math.floor(this.rng() * Math.min(3, 1 + difficulty / 2));
     for (let i = 0; i < count; i++) {
       const y = 100 + this.rng() * 190;
-      const speed = CONFIG.PIGEON_BASE_SPEED + this.rng() * (CONFIG.PIGEON_MAX_SPEED - CONFIG.PIGEON_BASE_SPEED) * (0.3 + difficulty / 12);
+      const speed = CONFIG.PIGEON_BASE_SPEED + this.rng() * (CONFIG.PIGEON_MAX_SPEED - CONFIG.PIGEON_BASE_SPEED) * (0.3 + difficulty / 12) + lvl * 10;
       Game.pigeons.push(new Pigeon(x + i * 90 + this.rng() * 40, y, speed));
     }
   },
@@ -96,13 +85,6 @@ const LevelGen = {
       const x = this.nextSpawnX;
       const d = Game.difficulty;
       const r = this.rng();
-
-      // puestos de cubanitos cada ~2400 px
-      if (x - this.lastStandX > 2200 + this.rng() * 600) {
-        this.spawnStand(x);
-        this.nextSpawnX += 90;
-        continue;
-      }
 
       if (r < 0.28 + d * 0.02) {
         this.spawnPotholes(x, d);

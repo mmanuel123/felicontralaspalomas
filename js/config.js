@@ -22,7 +22,7 @@ const CONFIG = {
   POTHOLE_DAMAGE: 10,
   PIGEON_DAMAGE: 15,
   PIGEON_POOP_DAMAGE: 15,
-  CAR_DAMAGE: 50,
+  CAR_DAMAGE: 34,
   CAR_KNOCKBACK: 320,
 
   // Recuperación
@@ -31,7 +31,7 @@ const CONFIG = {
   // Monedas
   PIGEON_COIN_REWARD: 1,
   COIN_VALUE: 1,
-  CUBANITO_PRICE: 3,
+  CUBANITO_PRICE: 10,
 
   // Palomas
   PIGEON_BASE_SPEED: 60,
@@ -51,16 +51,19 @@ const CONFIG = {
     {
       name: 'ALSINA',
       length: 14000,                // distancia en px hasta completar
+      speed: 1.00,                  // multiplicador de velocidad del nivel
       stores: ['LIBRERIA DON BOSCO', 'PIZZA PEPITO', 'COOPERATIVA OBRERA'],
     },
     {
       name: 'BELGRANO',
       length: 16000,
+      speed: 1.08,
       stores: ['CASA MUÑIZ', 'COOPERATIVA OBRERA', 'GALERIA BORGANI'],
     },
     {
       name: 'LAS HERAS',
       length: 18000,
+      speed: 1.16,
       stores: ['FARMACIA ESPAÑOLA', 'PANADERIA LA NUEVA SIRENA', 'ESTACIONAMIENTO'],
     },
   ],

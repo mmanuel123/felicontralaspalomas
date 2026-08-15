@@ -69,6 +69,7 @@ const Game = {
     this.buyMsgTime = 0;
     this.shakeTime = 0;
     this.levelComplete = false;
+    this.standSpawned = false;   // 1 puesto de cubanitos como máximo por nivel
     this.state = 'title';
     LevelGen.init(12345 + this.levelIndex * 7777);
   },
@@ -155,6 +156,16 @@ const Game = {
 
     this.handleCollisions();
 
+    // Puesto de cubanitos dinámico: aparece una sola vez por nivel, sólo
+    // cuando la vida baja del 30%, unos metros más adelante sobre la vereda.
+    if (!this.standSpawned && p.alive && p.hp < p.maxHp * 0.30) {
+      this.standSpawned = true;
+      const lane = p.lane === 1 ? 0 : p.lane; // siempre sobre una vereda
+      this.stands.push(new CubanitoStand(p.distance + 900, lane));
+      this.buyMsg = 'CUBANITO ADELANTE';
+      this.buyMsgTime = 1.4;
+    }
+
     // limpiar entidades fuera de pantalla
     const cut = this.cameraX - 140;
     this.pigeons = this.pigeons.filter(e => screenX(e.worldX) > -80 && !(e.dead && e.deadTimer > 0.7));
@@ -192,10 +203,10 @@ const Game = {
         }
         continue;
       }
-      // colisión cuerpo a cuerpo (en el suelo)
+      // colisión cuerpo a cuerpo (en el suelo): lastima pero NO mata.
+      // Las palomas sólo mueren si el personaje salta sobre ellas.
       if (p.invincible <= 0 && rectOverlap(hb, ph)) {
         p.takeDamage(CONFIG.PIGEON_DAMAGE);
-        pigeon.die(false);
       }
     }
 
@@ -266,7 +277,7 @@ const Game = {
             p.stateTime = 0;
             AudioSys.buy();
             setTimeout(() => AudioSys.eat(), 250);
-            this.buyMsg = '+50 HP';
+            this.buyMsg = '+' + CONFIG.CUBANITO_HEAL + ' HP';
             this.buyMsgTime = 1.6;
           }
         } else {
