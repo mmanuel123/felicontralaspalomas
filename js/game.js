@@ -14,6 +14,7 @@ const Game = {
   buyMsg: '',
   buyMsgTime: 0,
   shakeTime: 0,
+  levelIndex: 0,               // 0=ALSINA, 1=BELGRANO, 2=LAS HERAS
   pigeons: [],
   poops: [],
   cars: [],
@@ -36,13 +37,22 @@ const Game = {
       if (Game.state === 'playing') Game.player.tryJump();
     });
 
-    this.resetAll();
+    this.levelIndex = 0;
+    this.resetWorld(false);
     UI.showTitle();
     requestAnimationFrame((t) => this.loop(t));
   },
 
-  resetAll() {
+  // Nivel actual (objeto de CONFIG.LEVELS)
+  currentLevel() {
+    return CONFIG.LEVELS[this.levelIndex] || CONFIG.LEVELS[0];
+  },
+
+  // Reinicia el mundo de juego manteniendo (o no) las monedas.
+  resetWorld(carryCoins) {
+    const coins = carryCoins ? this.player.coins : 0;
     this.player = new Player();
+    if (carryCoins) this.player.coins = coins;
     this.cameraX = 0;
     this.time = 0;
     this.difficulty = 0;
@@ -56,10 +66,16 @@ const Game = {
     this.deco = [];
     this.buyZone = null;
     this.buyMsg = '';
+    this.buyMsgTime = 0;
     this.shakeTime = 0;
     this.levelComplete = false;
     this.state = 'title';
-    LevelGen.init(Date.now() % 100000);
+    LevelGen.init(12345 + this.levelIndex * 7777);
+  },
+
+  resetAll() {
+    this.levelIndex = 0;
+    this.resetWorld(false);
   },
 
   start() {
@@ -76,7 +92,7 @@ const Game = {
 
   restart() {
     AudioSys.resume();
-    this.resetAll();
+    this.resetWorld(false);
     this.state = 'banner';
     UI.showLevelBanner();
     setTimeout(() => {
@@ -87,11 +103,24 @@ const Game = {
   },
 
   completeLevel() {
-    this.levelComplete = true;
-    this.state = 'complete';
-    AudioSys.stopMusic();
-    AudioSys.levelUp();
-    UI.showLevelComplete();
+    // avanzar al siguiente nivel o terminar el juego
+    if (this.levelIndex < CONFIG.LEVELS.length - 1) {
+      this.levelIndex++;
+      this.resetWorld(true);            // conserva las monedas
+      this.state = 'banner';
+      UI.showLevelBanner();
+      setTimeout(() => {
+        this.state = 'playing';
+        UI.hide();
+        AudioSys.startMusic();
+      }, 1800);
+    } else {
+      this.levelComplete = true;
+      this.state = 'complete';
+      AudioSys.stopMusic();
+      AudioSys.levelUp();
+      UI.showLevelComplete();
+    }
   },
 
   loop(t) {

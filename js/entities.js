@@ -122,14 +122,14 @@ class Pedestrian {
     this.lane = lane;            // 0 vereda sup, 2 vereda inf
     this.speed = speed;          // en pantalla (se mueve hacia la izquierda)
     this.anim = Math.random() * 10;
-    this.variant = Math.floor(Math.random() * SPR.pedestrians.length);
+    this.variant = Math.floor(Math.random() * (SPR.pedestrians.length / 2));
   }
   update(dt) {
     this.worldX += (Game.player.speed - this.speed) * dt;
     this.anim += dt * 6;
   }
   draw(ctx) {
-    const spr = SPR.pedestrians[this.variant];
+    const spr = SPR.pedestrians[this.variant * 2 + (Math.floor(this.anim) % 2)];
     const feetY = CONFIG.LANES[this.lane].feetY;
     drawSprite(ctx, spr, screenX(this.worldX), feetY, { scale: 3, pivot: 'bottom' });
   }

@@ -33,10 +33,10 @@ class Player {
   get laneInfo() { return CONFIG.LANES[this.lane]; }
   get isOnSidewalk() { return this.laneInfo.type === 'sidewalk'; }
 
-  // hitbox aproximada del personaje (sprite ~72px de alto con contorno)
+  // hitbox aproximada del personaje (sprite ~64px de alto con contorno)
   hitbox() {
-    const h = 56, w = 22;
-    return { x: this.x - 11, y: this.feetY - h, w, h };
+    const h = 50, w = 20;
+    return { x: this.x - 10, y: this.feetY - h, w, h };
   }
 
   takeDamage(dmg, source) {

@@ -148,17 +148,9 @@ const Render = {
 
       // cartel de comercio
       if ((h >> 10) % 2 === 0) {
-        const names = ['FARMACIA', 'KIOSKO', 'PANADERIA', 'LIBRERIA', 'GELATERIA', 'VERDULERIA', 'CARNICERIA', 'FOTOC BAHIA'];
-        const name = names[(h >> 12) % names.length];
-        ctx.fillStyle = '#e5484d';
-        ctx.fillRect(sx + 8, 66, bw - 16, 16);
-        ctx.fillStyle = '#3a2a1a';
-        ctx.fillRect(sx + 8, 80, bw - 16, 3);
-        ctx.fillStyle = '#fff';
-        ctx.font = '8px monospace';
-        ctx.textAlign = 'center';
-        ctx.fillText(name, sx + bw / 2, 78);
-        ctx.textAlign = 'left';
+        const stores = Game.currentLevel().stores;
+        const name = stores[(h >> 12) % stores.length];
+        this.drawStoreSign(ctx, sx, bw, name);
       }
 
       // aire acondicionado
@@ -169,6 +161,33 @@ const Render = {
         ctx.fillRect(sx + bw - 30, 44, 18, 3);
       }
     }
+  },
+
+  // Cartel de comercio con el nombre de la calle/nivel.
+  // Ajusta la fuente y usa dos líneas si el nombre es largo.
+  drawStoreSign(ctx, sx, bw, name) {
+    const w = bw - 16;
+    ctx.fillStyle = '#e5484d';
+    ctx.fillRect(sx + 8, 64, w, 24);
+    ctx.fillStyle = '#3a2a1a';
+    ctx.fillRect(sx + 8, 86, w, 3);
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'center';
+    const avail = w - 10;
+    let line1 = name, line2 = null;
+    if (name.length > 14) {
+      const sp = name.lastIndexOf(' ', 14);
+      if (sp > 3) { line1 = name.slice(0, sp); line2 = name.slice(sp + 1); }
+    }
+    const fs = Math.max(6, Math.min(8, Math.floor((avail - 2) / Math.max(line1.length, line2 ? line2.length : 1))));
+    ctx.font = fs + 'px monospace';
+    if (line2) {
+      ctx.fillText(line1, sx + bw / 2, 75);
+      ctx.fillText(line2, sx + bw / 2, 84);
+    } else {
+      ctx.fillText(line1, sx + bw / 2, 80);
+    }
+    ctx.textAlign = 'left';
   },
 
   drawCrosswalks(ctx) {

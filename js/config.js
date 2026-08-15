@@ -46,9 +46,26 @@ const CONFIG = {
   // Peatones
   PEDESTRIAN_SPEED: 40,
 
-  // Nivel 1 — ALSINA
-  LEVEL_NAME: "ALSINA",
-  LEVEL_LENGTH: 14000,           // distancia en px hasta completar
+  // Niveles — cada uno es una calle de Bahía Blanca con sus locales
+  LEVELS: [
+    {
+      name: 'ALSINA',
+      length: 14000,                // distancia en px hasta completar
+      stores: ['LIBRERIA DON BOSCO', 'PIZZA PEPITO', 'COOPERATIVA OBRERA'],
+    },
+    {
+      name: 'BELGRANO',
+      length: 16000,
+      stores: ['CASA MUÑIZ', 'COOPERATIVA OBRERA', 'GALERIA BORGANI'],
+    },
+    {
+      name: 'LAS HERAS',
+      length: 18000,
+      stores: ['FARMACIA ESPAÑOLA', 'PANADERIA LA NUEVA SIRENA', 'ESTACIONAMIENTO'],
+    },
+  ],
+  LEVEL_NAME: "ALSINA",              // valor por defecto (nivel 1)
+  LEVEL_LENGTH: 14000,               // valor por defecto (nivel 1)
   LEVEL_START_DIFFICULTY: 0,
   LEVEL_MAX_DIFFICULTY: 10,
 

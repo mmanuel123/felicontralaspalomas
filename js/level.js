@@ -86,7 +86,7 @@ const LevelGen = {
   },
 
   update(dt) {
-    if (Game.player.distance >= CONFIG.LEVEL_LENGTH) {
+    if (Game.player.distance >= Game.currentLevel().length) {
       if (!Game.levelComplete) Game.completeLevel();
       return;
     }

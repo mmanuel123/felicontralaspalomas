@@ -32,10 +32,12 @@ const UI = {
     ctx.fillText('x' + Game.player.coins, cx + 12, cy - 2);
 
     // ---- Nivel y distancia ----
+    const lv = Game.levelIndex + 1;
+    const lvName = Game.currentLevel().name;
     ctx.font = 'bold 12px monospace';
-    ctx.strokeText('NIVEL 1 · ' + CONFIG.LEVEL_NAME, bx, 48);
+    ctx.strokeText('NIVEL ' + lv + ' · ' + lvName, bx, 48);
     ctx.fillStyle = '#fff';
-    ctx.fillText('NIVEL 1 · ' + CONFIG.LEVEL_NAME, bx, 48);
+    ctx.fillText('NIVEL ' + lv + ' · ' + lvName, bx, 48);
     const dist = Math.floor(Game.player.distance / 10) + 'm';
     ctx.strokeText(dist, bx, 64);
     ctx.fillText(dist, bx, 64);
@@ -81,10 +83,11 @@ const UI = {
   },
 
   showLevelBanner() {
+    const lv = Game.levelIndex + 1;
     this.show('', `
       <div class="overlay-box">
-        <h1>NIVEL 1</h1>
-        <p class="subtitle" style="font-size:22px">ALSINA</p>
+        <h1>NIVEL ${lv}</h1>
+        <p class="subtitle" style="font-size:22px">${Game.currentLevel().name}</p>
         <p class="subtitle">¡A correr! Esquiva pozos y autos, patea palomas y junta monedas.</p>
       </div>
     `);
@@ -93,6 +96,7 @@ const UI = {
   showGameOver() {
     AudioSys.death();
     const dist = Math.floor(Game.player.distance / 10);
+    const lv = Game.levelIndex + 1;
     this.show('', `
       <div class="overlay-box">
         <h1 style="color:#e5484d">GAME OVER</h1>
@@ -100,7 +104,7 @@ const UI = {
         <div class="stats">
           🏃 Distancia: ${dist} m<br>
           🪙 Monedas: ${Game.player.coins}<br>
-          🏁 Nivel: 1 · ${CONFIG.LEVEL_NAME}
+          🏁 Nivel: ${lv} · ${Game.currentLevel().name}
         </div>
         <button class="btn" id="btn-retry">↻ Volver a jugar</button>
         <button class="btn btn-secondary" id="btn-menu">Menú</button>
@@ -114,21 +118,29 @@ const UI = {
 
   showLevelComplete() {
     const dist = Math.floor(Game.player.distance / 10);
+    const lv = Game.levelIndex + 1;
+    const last = Game.levelIndex >= CONFIG.LEVELS.length - 1;
+    const title = last ? '¡JUEGO COMPLETADO!' : '¡NIVEL COMPLETADO!';
+    const sub = last ? '¡Recorriste toda la Bahía Blanca!' : 'Siguiente parada: ' + CONFIG.LEVELS[Math.min(Game.levelIndex + 1, CONFIG.LEVELS.length - 1)].name;
     this.show('', `
       <div class="overlay-box">
-        <h1 style="color:#4ae04a">¡NIVEL COMPLETADO!</h1>
+        <h1 style="color:#4ae04a">${title}</h1>
+        <p class="subtitle">${sub}</p>
         <div class="stats">
           🏃 Distancia: ${dist} m<br>
           🪙 Monedas: ${Game.player.coins}<br>
-          🏁 Nivel: 1 · ${CONFIG.LEVEL_NAME}
+          🏁 Nivel: ${lv} · ${Game.currentLevel().name}
         </div>
-        <button class="btn" id="btn-retry">↻ Jugar de nuevo</button>
+        <button class="btn" id="btn-retry">${last ? '↻ Jugar de nuevo' : '▶ Siguiente nivel'}</button>
         <button class="btn btn-secondary" id="btn-menu">Menú</button>
       </div>
     `);
     const retry = document.getElementById('btn-retry');
     const menu = document.getElementById('btn-menu');
-    if (retry) retry.addEventListener('click', () => Game.restart());
+    if (retry) retry.addEventListener('click', () => {
+      if (last) { Game.resetAll(); }
+      Game.start();
+    });
     if (menu) menu.addEventListener('click', () => { Game.resetAll(); UI.showTitle(); });
   },
 };
