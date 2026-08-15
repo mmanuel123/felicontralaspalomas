@@ -36,6 +36,12 @@ const LevelGen = {
     for (let i = 0; i < 6; i++) {
       Game.pedestrians.push(new Pedestrian(300 + i * 220, i % 2 === 0 ? 0 : 2, 20 + this.rng() * 25));
     }
+    // bandada inicial de palomas: el arranque no puede ser un paseo
+    for (let i = 0; i < 7; i++) {
+      Game.pigeons.push(new Pigeon(650 + i * 170 + this.rng() * 80,
+        90 + this.rng() * 160,
+        CONFIG.PIGEON_BASE_SPEED + this.rng() * (CONFIG.PIGEON_MAX_SPEED - CONFIG.PIGEON_BASE_SPEED) * 0.4));
+    }
   },
 
   get difficulty() { return Game.difficulty; },

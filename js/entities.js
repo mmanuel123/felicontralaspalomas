@@ -128,6 +128,10 @@ class Pedestrian {
     this.worldX += (Game.player.speed - this.speed) * dt;
     this.anim += dt * 6;
   }
+  hitbox() {
+    const feetY = CONFIG.LANES[this.lane].feetY;
+    return { x: screenX(this.worldX) - 12, y: feetY - 48, w: 48, h: 48 };
+  }
   draw(ctx) {
     const spr = SPR.pedestrians[this.variant * 2 + (Math.floor(this.anim) % 2)];
     const feetY = CONFIG.LANES[this.lane].feetY;

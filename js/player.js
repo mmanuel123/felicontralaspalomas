@@ -28,6 +28,9 @@ class Player {
     this.dangerCooldown = 0.6;         // pausa el scroll tras recibir daño de auto
     this.kickActive = false;
     this.alive = true;
+    this.pedBlocked = false;
+    this.pedBlockedPrev = false;
+    this.pedHitCooldown = 0;
   }
 
   get laneInfo() { return CONFIG.LANES[this.lane]; }
@@ -69,8 +72,22 @@ class Player {
     if (!this.alive || this.airborne || this.state === 'hurt') return;
     const next = this.lane + dir;
     if (next < 0 || next >= CONFIG.LANES.length) return;
+    if (this.laneBlockedByPedestrian(next)) {
+      AudioSys.bump();
+      return;
+    }
     this.lane = next;
     this.targetFeetY = CONFIG.LANES[next].feetY;
+  }
+
+  // ¿un peatón está parado justo donde quiero pisar?
+  laneBlockedByPedestrian(lane) {
+    for (const ped of Game.pedestrians) {
+      if (ped.lane !== lane) continue;
+      const pb = ped.hitbox();
+      if (Math.abs(pb.x + pb.w / 2 - this.x) < 32) return true;
+    }
+    return false;
   }
 
   tryJump() {
@@ -115,6 +132,30 @@ class Player {
       this.dangerCooldown -= dt;
       if (this.dangerCooldown <= 0) this.speed = base;
     }
+
+    // un peatón en el mismo carril traba al personaje: lo frena y le hace
+    // perder monedas, dejándolo sin lugar para esquivar si no cambia de carril.
+    this.pedBlocked = false;
+    if (!this.airborne) {
+      for (const ped of Game.pedestrians) {
+        if (ped.lane !== this.lane) continue;
+        if (rectOverlap(this.hitbox(), ped.hitbox())) {
+          this.pedBlocked = true;
+          this.speed = Math.min(this.speed, base * 0.35);
+          if (this.pedHitCooldown <= 0) {
+            this.pedHitCooldown = 1.0;
+            if (this.coins > 0) {
+              this.coins = Math.max(0, this.coins - 2);
+              AudioSys.bump();
+            }
+          }
+          break;
+        }
+      }
+    }
+    if (this.pedBlocked && !this.pedBlockedPrev) AudioSys.bump();
+    this.pedBlockedPrev = this.pedBlocked;
+    if (this.pedHitCooldown > 0) this.pedHitCooldown -= dt;
     if (this.running) this.distance += this.speed * dt;
 
     // invencibilidad

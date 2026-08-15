@@ -303,10 +303,8 @@ const Game = {
     for (const e of this.stands) e.draw(ctx);
     for (const e of this.coins) e.draw(ctx);
 
-    // peatones
-    for (const e of this.pedestrians) {
-      if (!e.isDeco) e.draw(ctx);
-    }
+    // peatones (bloquean carriles: todos visibles y con colisión)
+    for (const e of this.pedestrians) e.draw(ctx);
 
     // cacas y palomas
     for (const e of this.poops) e.draw(ctx);
