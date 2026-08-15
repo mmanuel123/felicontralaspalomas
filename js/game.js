@@ -25,6 +25,10 @@ const Game = {
   coins: [],
   stands: [],
   deco: [],
+  garrapinadas: [],            // proyectiles lanzados
+  garrapinadaBag: null,        // bolsita sin agarrar
+  garrapinadaSpawned: false,   // 1 bolsita por nivel como máximo
+  garrapinadaCooldown: 0,
 
   init() {
     this.canvas = document.getElementById('game-canvas');
@@ -72,6 +76,11 @@ const Game = {
     this.shakeTime = 0;
     this.levelComplete = false;
     this.standSpawned = false;   // 1 puesto de cubanitos como máximo por nivel
+    this.garrapinadas = [];
+    this.garrapinadaBag = null;
+    this.garrapinadaSpawned = false;
+    this.garrapinadaCooldown = 0;
+    UI.hideThrowButton();
     this.state = 'title';
     LevelGen.init(12345 + this.levelIndex * 7777);
   },
@@ -173,6 +182,8 @@ const Game = {
     for (const e of this.cars) e.update(dt);
     for (const e of this.pedestrians) e.update(dt);
     for (const e of this.coins) e.update(dt);
+    this.garrapinadaCooldown = Math.max(0, this.garrapinadaCooldown - dt);
+    for (const g of this.garrapinadas) g.update(dt);
 
     this.handleCollisions();
 
@@ -186,6 +197,28 @@ const Game = {
       this.buyMsgTime = 1.4;
     }
 
+    // Bolsita de garrapiñadas: aparece una vez por nivel, sin costo,
+    // unos metros más adelante sobre la calle.
+    if (!this.garrapinadaSpawned && p.alive && p.distance >= CONFIG.GARRAPIÑADA_SPAWN_X) {
+      this.garrapinadaSpawned = true;
+      this.garrapinadaBag = new GarrapinadaBag(p.distance + 600, 1);
+    }
+
+    // lanzar garrapiñadas (tecla X o botón LANZAR)
+    if (Input.throwPressed && p.alive && p.hasGarrapinadas && p.garrapinadas > 0 &&
+        this.garrapinadaCooldown <= 0) {
+      p.garrapinadas--;
+      this.garrapinadaCooldown = CONFIG.GARRAPIÑADA_THROW_COOLDOWN;
+      this.garrapinadas.push(new Garrapinada(p.distance + 24, p.feetY - 46, -130));
+      AudioSys.throw();
+      if (p.garrapinadas <= 0) {
+        p.hasGarrapinadas = false;
+        this.buyMsg = '¡SIN GARRAPIÑADAS!';
+        this.buyMsgTime = 1.0;
+        UI.hideThrowButton();
+      }
+    }
+
     // limpiar entidades fuera de pantalla
     const cut = this.cameraX - 140;
     this.pigeons = this.pigeons.filter(e => screenX(e.worldX) > -80 && !(e.dead && e.deadTimer > 0.7));
@@ -196,6 +229,8 @@ const Game = {
     this.coins = this.coins.filter(e => e.worldX > cut);
     this.stands = this.stands.filter(e => e.worldX > cut);
     this.deco = this.deco.filter(e => e.worldX > cut);
+    this.garrapinadas = this.garrapinadas.filter(g =>
+      !g.dead && screenX(g.worldX) > -60 && screenX(g.worldX) < CONFIG.VW + 60 && g.y < 420);
 
     if (!p.alive) {
       this.lives--;
@@ -272,7 +307,9 @@ const Game = {
       const laneY = CONFIG.LANES[hole.lane].feetY;
       if (p.lane === hole.lane && !p.airborne && Math.abs(p.targetFeetY - laneY) < 10) {
         const hw = screenX(hole.worldX);
-        const potholeRect = { x: hw, y: laneY - 24, w: 48, h: 24 };
+        const potholeRect = hole.round
+          ? { x: hw + 10, y: laneY - 28, w: 28, h: 28 }
+          : { x: hw, y: laneY - 24, w: 48, h: 24 };
         if (rectOverlap(hb, potholeRect)) {
           hole.hit = true;
           p.takeDamage(CONFIG.POTHOLE_DAMAGE);
@@ -289,6 +326,33 @@ const Game = {
         coin.taken = true;
         Game.addCoins(CONFIG.COIN_VALUE);
         AudioSys.coin();
+      }
+    }
+
+    // ---- Bolsita de garrapiñadas (recojo automático al pasar) ----
+    if (this.garrapinadaBag && !this.garrapinadaBag.taken) {
+      const z = this.garrapinadaBag.zone();
+      if (p.x > z.x - 12 && p.x < z.x + z.w + 12) {
+        this.garrapinadaBag.taken = true;
+        p.hasGarrapinadas = true;
+        p.garrapinadas = CONFIG.GARRAPIÑADA_BAG_COUNT;
+        this.buyMsg = '¡GARRAPIÑADAS! LANZALAS CON X (x' + p.garrapinadas + ')';
+        this.buyMsgTime = 1.8;
+        AudioSys.pickup();
+        UI.showThrowButton();
+      }
+    }
+
+    // ---- Garrapiñadas lanzadas: matan palomas al impactar ----
+    for (const g of this.garrapinadas) {
+      if (g.dead) continue;
+      for (const pigeon of this.pigeons) {
+        if (pigeon.dead) continue;
+        if (rectOverlap(g.hitbox(), pigeon.hitbox())) {
+          g.dead = true;
+          pigeon.die(true);
+          break;
+        }
       }
     }
 
@@ -336,6 +400,7 @@ const Game = {
     // pozos (debajo de todo en el piso)
     for (const e of this.potholes) e.draw(ctx);
     for (const e of this.stands) e.draw(ctx);
+    if (this.garrapinadaBag && !this.garrapinadaBag.taken) this.garrapinadaBag.draw(ctx);
     for (const e of this.coins) e.draw(ctx);
 
     // peatones (bloquean carriles: todos visibles y con colisión)
@@ -350,6 +415,9 @@ const Game = {
 
     // jugador
     this.player.draw(ctx);
+
+    // garrapiñadas lanzadas (por encima de todo)
+    for (const g of this.garrapinadas) g.draw(ctx);
 
     ctx.restore();
 

@@ -143,12 +143,67 @@ class Pedestrian {
 class Pothole {
   constructor(worldX, lane) {
     this.worldX = worldX;
-    this.lane = lane;            // 0 sup, 2 inf
+    this.lane = lane;            // 0 sup, 1 calle, 2 inf
     this.hit = false;
+    this.round = lane === 1;     // los de la calle son redondos
   }
   draw(ctx) {
     const feetY = CONFIG.LANES[this.lane].feetY;
+    if (this.round) {
+      // pozo redondo en el asfalto: borde + interior + reflejo superior
+      const cx = screenX(this.worldX) + 24, cy = feetY - 14, R = 14;
+      ctx.fillStyle = '#1c1c22';
+      ctx.beginPath();
+      ctx.arc(cx, cy, R + 2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#26262e';
+      ctx.beginPath();
+      ctx.arc(cx, cy, R, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,0.10)';
+      ctx.beginPath();
+      ctx.arc(cx - 3, cy - 5, 5, 0, Math.PI * 2);
+      ctx.fill();
+      return;
+    }
     drawSprite(ctx, SPR.pothole, screenX(this.worldX), feetY, { scale: 4, pivot: 'bottom' });
+  }
+}
+
+// ---------------- BOLSITA DE GARRAPIÑADAS ----------------
+class GarrapinadaBag {
+  constructor(worldX, lane) {
+    this.worldX = worldX;
+    this.lane = lane;            // 0 sup, 2 inf
+    this.taken = false;
+  }
+  zone() {
+    return { x: screenX(this.worldX) - 10, w: 84 };
+  }
+  draw(ctx) {
+    const feetY = CONFIG.LANES[this.lane].feetY;
+    drawSprite(ctx, SPR.garrapinada, screenX(this.worldX), feetY, { scale: 4, pivot: 'bottom' });
+  }
+}
+
+// ---------------- GARRAPIÑADA LANZADA (proyectil) ----------------
+class Garrapinada {
+  constructor(worldX, y, vy) {
+    this.worldX = worldX;
+    this.y = y;
+    this.vy = vy || -120;
+    this.dead = false;
+  }
+  update(dt) {
+    this.worldX += (Game.player.speed + CONFIG.GARRAPIÑADA_SPEED) * dt;
+    this.vy += CONFIG.GARRAPIÑADA_GRAVITY * dt;
+    this.y += this.vy * dt;
+  }
+  hitbox() {
+    return { x: screenX(this.worldX) - 5, y: this.y - 5, w: 10, h: 10 };
+  }
+  draw(ctx) {
+    drawSprite(ctx, SPR.garrapinadaPellet, screenX(this.worldX), this.y, { scale: 2 });
   }
 }
 

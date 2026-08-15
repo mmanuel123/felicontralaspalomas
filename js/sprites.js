@@ -492,6 +492,33 @@ const LAMP = [
   '......P.......',
 ];
 
+// Bolsita de garrapiñadas (papel con tapa plegada)
+const P_GARRAPIÑADA = {
+  W: '#efe6d0', P: '#c9922f', p: '#a8761f', K: '#3a2a1a',
+};
+const GARRAPIÑADA_BAG = [
+  '..KKKK..',
+  '.KWWWWK.',
+  '.KWWWWK.',
+  '.KPPPPK.',
+  '.KPPPPK.',
+  'KPPPPPPK',
+  'KPpPPPPK',
+  'KPPpPPPK',
+  'KPPPPPPK',
+  '.KKKKKK.',
+];
+
+// Piedrita / garrapiñada (proyectil)
+const P_PELLET = { c: '#e8c57a', d: '#b98a45', s: '#fff0c8' };
+const GARRAPIÑADA_PELLET = [
+  '.ccc.',
+  'ccdcc',
+  'cdsdc',
+  'ccdcc',
+  '.ccc.',
+];
+
 // ============================================================
 // Inicialización
 // ============================================================
@@ -522,4 +549,6 @@ function initSprites() {
   SPR.stand = makeSprite(STAND, P_STAND, 4);
   SPR.tree = makeSprite(TREE, P_TREE, 4);
   SPR.lamp = makeSprite(LAMP, P_LAMP, 4);
+  SPR.garrapinada = makeSprite(GARRAPIÑADA_BAG, P_GARRAPIÑADA, 4);
+  SPR.garrapinadaPellet = makeSprite(GARRAPIÑADA_PELLET, P_PELLET, 2);
 }

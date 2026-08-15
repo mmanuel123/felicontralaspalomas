@@ -49,7 +49,8 @@ const LevelGen = {
   get difficulty() { return Game.difficulty; },
 
   spawnPotholes(x, difficulty) {
-    const lane = this.rng() < 0.5 ? 0 : 2;
+    // 40% en la calle (carril central), el resto en las veredas
+    const lane = this.rng() < 0.4 ? 1 : (this.rng() < 0.5 ? 0 : 2);
     const count = 1 + Math.floor(this.rng() * Math.min(3, 1 + difficulty / 3));
     for (let i = 0; i < count; i++) {
       Game.potholes.push(new Pothole(x + i * 40 + this.rng() * 20, lane));
@@ -97,14 +98,14 @@ const LevelGen = {
       const r = this.rng();
 
       // ventanas fijas para que ninguna desaparezca a dificultad alta:
-      // pozo 28%, paloma 22%, auto 14%, moneda 14%, peatón 10%, decoración 12%
+      // pozo 28%, paloma 22%, auto 19%, moneda 9%, peatón 8%, decoración 14%
       if (r < 0.28) {
         this.spawnPotholes(x, d);
         this.nextSpawnX += 90;
       } else if (r < 0.50) {
         this.spawnPigeons(x, d);
         this.nextSpawnX += 110;
-      } else if (r < 0.64 && x >= CONFIG.CAR_START_X) {
+      } else if (r < 0.69 && x >= CONFIG.CAR_START_X) {
         // tráfico: nunca antes de la zona de entrada y con separación
         // mínima entre autos para que no se agolpen ni te dejen sin vida.
         if (x - this.lastCarX >= CONFIG.CAR_MIN_GAP) {

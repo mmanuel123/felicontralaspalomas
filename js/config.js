@@ -47,8 +47,15 @@ const CONFIG = {
   // Autos
   CAR_BASE_SPEED: 160,
   CAR_MAX_SPEED: 340,
-  CAR_START_X: 1400,             // sin autos antes de esta distancia (arranque tranquilo)
-  CAR_MIN_GAP: 650,              // separación mínima entre autos consecutivos
+  CAR_START_X: 1000,             // sin autos antes de esta distancia (arranque tranquilo)
+  CAR_MIN_GAP: 480,              // separación mínima entre autos consecutivos
+
+  // Garrapiñadas
+  GARRAPIÑADA_BAG_COUNT: 10,     // garrapiñadas por paquete (limitadas)
+  GARRAPIÑADA_SPAWN_X: 2600,     // distancia del mundo donde aparece el paquete
+  GARRAPIÑADA_THROW_COOLDOWN: 0.35, // segundos entre lanzamientos
+  GARRAPIÑADA_SPEED: 460,        // velocidad del proyectil hacia adelante
+  GARRAPIÑADA_GRAVITY: 260,      // arco leve al caer
 
   // Peatones
   PEDESTRIAN_SPEED: 40,

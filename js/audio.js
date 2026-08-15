@@ -79,6 +79,8 @@ const AudioSys = {
   bump() { this.tone(170, 0.1, 'square', 0.1, 0, 120); },
   poop() { this.noise(0.2, 0.15, 0, 500); this.tone(150, 0.2, 'triangle', 0.1, 0, 60); },
   buy() { this.tone(660, 0.1, 'square', 0.13); this.tone(990, 0.15, 'square', 0.13, 0.09); },
+  pickup() { this.tone(700, 0.08, 'square', 0.12); this.tone(1050, 0.12, 'square', 0.12, 0.07); this.tone(1400, 0.16, 'square', 0.1, 0.14); },
+  throw() { this.noise(0.05, 0.06, 0, 1800); this.tone(300, 0.08, 'triangle', 0.1, 0, 520); },
   eat() { this.tone(330, 0.08, 'triangle', 0.14); this.tone(440, 0.08, 'triangle', 0.14, 0.08); this.tone(550, 0.12, 'triangle', 0.14, 0.16); },
   death() { this.tone(400, 0.6, 'sawtooth', 0.18, 0, 40); this.tone(200, 0.8, 'square', 0.15, 0.2, 30); },
   lifeUp() { this.tone(523, 0.12, 'square', 0.13); this.tone(659, 0.12, 'square', 0.13, 0.1); this.tone(784, 0.12, 'square', 0.13, 0.2); this.tone(1047, 0.25, 'square', 0.14, 0.3); },

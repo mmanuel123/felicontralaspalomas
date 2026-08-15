@@ -10,8 +10,10 @@ class Player {
     this.hp = CONFIG.PLAYER_START_HP;
     this.maxHp = CONFIG.PLAYER_MAX_HP;
     this.coins = 0;
+    this.hasGarrapinadas = false;  // tiene la bolsita (puede lanzar)
+    this.garrapinadas = 0;         // munición restante
     this.lane = CONFIG.PLAYER_START_LANE;
-    this.x = 90;                       // posición fija en pantalla (px)
+    this.x = Math.floor(CONFIG.VW / 4); // posición fija en pantalla (px): a un cuarto del ancho
     this.feetY = CONFIG.LANES[this.lane].feetY;
     this.targetFeetY = this.feetY;
     this.vy = 0;

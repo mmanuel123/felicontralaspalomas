@@ -31,6 +31,17 @@ const UI = {
     ctx.fillStyle = '#ffd23c';
     ctx.fillText('x' + Game.player.coins, cx + 12, cy - 2);
 
+    // ---- Garrapiñadas ----
+    if (Game.player.hasGarrapinadas) {
+      drawSprite(ctx, SPR.garrapinadaPellet, cx + 8, cy + 15, { scale: 2, pivot: 'center' });
+      ctx.font = 'bold 12px monospace';
+      ctx.strokeStyle = '#000';
+      ctx.lineWidth = 3;
+      ctx.strokeText('x' + Game.player.garrapinadas, cx + 16, cy + 20);
+      ctx.fillStyle = '#e8c57a';
+      ctx.fillText('x' + Game.player.garrapinadas, cx + 16, cy + 20);
+    }
+
     // ---- Vidas (corazones) ----
     const hx = CONFIG.VW - 108, hy = 12;
     const filled = '♥'.repeat(Game.lives);
@@ -96,6 +107,15 @@ const UI = {
     const overlay = document.getElementById('overlay');
     overlay.innerHTML = '';
     overlay.style.pointerEvents = 'none';
+  },
+
+  showThrowButton() {
+    const el = document.getElementById('btn-throw');
+    if (el) el.classList.add('show');
+  },
+  hideThrowButton() {
+    const el = document.getElementById('btn-throw');
+    if (el) el.classList.remove('show');
   },
 
   showTitle() {

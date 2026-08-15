@@ -6,9 +6,11 @@ const Input = {
   up: false,
   down: false,
   jump: false,
+  throw: false,
   upPressed: false,
   downPressed: false,
   jumpPressed: false,
+  throwPressed: false,
   interactPressed: false,
 
   init() {
@@ -18,18 +20,21 @@ const Input = {
       if (e.code === 'ArrowUp' || e.code === 'KeyW') { this.up = true; this.upPressed = true; }
       if (e.code === 'ArrowDown' || e.code === 'KeyS') { this.down = true; this.downPressed = true; }
       if (e.code === 'Space') { this.jump = true; this.jumpPressed = true; }
+      if (e.code === 'KeyX' || e.code === 'KeyF') this.throwPressed = true;
       if (e.code === 'Enter' || e.code === 'KeyE') this.interactPressed = true;
     });
     window.addEventListener('keyup', (e) => {
       if (e.code === 'ArrowUp' || e.code === 'KeyW') this.up = false;
       if (e.code === 'ArrowDown' || e.code === 'KeyS') this.down = false;
       if (e.code === 'Space') this.jump = false;
+      if (e.code === 'KeyX' || e.code === 'KeyF') this.throw = false;
     });
 
     // Botones táctiles
     this._bindTouch('btn-up', 'up');
     this._bindTouch('btn-down', 'down');
     this._bindTouch('btn-jump', 'jump');
+    this._bindTouch('btn-throw', 'throw');
   },
 
   _bindTouch(id, key) {
@@ -61,5 +66,6 @@ const Input = {
     this.interactPressed = false;
     this.upPressed = false;
     this.downPressed = false;
+    this.throwPressed = false;
   },
 };

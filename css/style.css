@@ -72,9 +72,11 @@ html, body {
   transform: scale(0.95);
 }
 
-.touch-btn-up { left: 5%; bottom: 8%; }
-.touch-btn-down { left: 5%; bottom: 38%; }
+.touch-btn-up { left: 5%; bottom: 38%; }
+.touch-btn-down { left: 5%; bottom: 8%; }
 .touch-btn-jump { right: 8%; bottom: 22%; }
+.touch-btn-throw { right: 8%; bottom: 56%; display: none; }
+#btn-throw.show { display: flex; }
 
 /* Pantallas superpuestas (título, game over, nivel) */
 #overlay {
