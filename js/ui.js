@@ -74,14 +74,20 @@ const UI = {
 
     // ---- Nivel y distancia ----
     const lv = Game.levelIndex + 1;
-    const lvName = Game.currentLevel().name;
+    const lvName = Game.state === 'boss' ? 'MUNICIPALIDAD' : Game.currentLevel().name;
     ctx.font = 'bold 12px monospace';
-    ctx.strokeText('NIVEL ' + lv + ' · ' + lvName, bx, 48);
-    ctx.fillStyle = '#fff';
-    ctx.fillText('NIVEL ' + lv + ' · ' + lvName, bx, 48);
-    const dist = Math.floor(Game.player.distance / 10) + 'm';
-    ctx.strokeText(dist, bx, 64);
-    ctx.fillText(dist, bx, 64);
+    if (Game.state === 'boss') {
+      ctx.strokeText('SEDE MUNICIPAL', bx, 48);
+      ctx.fillStyle = '#fff';
+      ctx.fillText('SEDE MUNICIPAL', bx, 48);
+    } else {
+      ctx.strokeText('NIVEL ' + lv + ' · ' + lvName, bx, 48);
+      ctx.fillStyle = '#fff';
+      ctx.fillText('NIVEL ' + lv + ' · ' + lvName, bx, 48);
+      const dist = Math.floor(Game.player.distance / 10) + 'm';
+      ctx.strokeText(dist, bx, 64);
+      ctx.fillText(dist, bx, 64);
+    }
 
     // ---- Cubanisho ----
     if (Game.buyZone) {
@@ -95,6 +101,29 @@ const UI = {
       ctx.fillText(msg, CONFIG.VW / 2, CONFIG.VH - 40);
       ctx.textAlign = 'left';
     }
+  },
+
+  // ---- Barra de vida del jefe (arriba al centro) ----
+  drawBossBar(ctx) {
+    if (!Game.boss || Game.boss.dead) return;
+    const bw = 230, bx = (CONFIG.VW - bw) / 2, by = 10, bh = 16;
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.fillRect(bx - 3, by - 3, bw + 6, bh + 6);
+    ctx.fillStyle = '#3a2a2a';
+    ctx.fillRect(bx, by, bw, bh);
+    const pct = Math.max(0, Game.boss.hp / Game.boss.maxHp);
+    ctx.fillStyle = '#e5484d';
+    ctx.fillRect(bx, by, bw * pct, bh);
+    ctx.fillStyle = '#20242e';
+    for (let i = 1; i < 10; i++) ctx.fillRect(bx + (bw / 10) * i, by, 2, bh);
+    ctx.font = 'bold 10px monospace';
+    ctx.fillStyle = '#fff';
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 3;
+    ctx.textAlign = 'center';
+    ctx.strokeText('PALOMA GIGANTE', CONFIG.VW / 2, by + bh - 3);
+    ctx.fillText('PALOMA GIGANTE', CONFIG.VW / 2, by + bh - 3);
+    ctx.textAlign = 'left';
   },
 
   // ---- Pantallas HTML ----
@@ -194,6 +223,27 @@ const UI = {
       if (last) { Game.resetAll(); }
       Game.start();
     });
+    if (menu) menu.addEventListener('click', () => { Game.resetAll(); UI.showTitle(); });
+  },
+
+  showBossVictory() {
+    AudioSys.levelUp();
+    const coins = Game.player.coins;
+    this.show('', `
+      <div class="overlay-box">
+        <h1 style="color:#4ae04a">¡JUEGO COMPLETADO!</h1>
+        <p class="subtitle">¡Derrotaste a la Paloma Gigante!<br>La Bahía Blanca está a salvo.</p>
+        <div class="stats">
+          🪙 Monedas: ${coins}<br>
+          ❤ Vidas: ${Game.lives}
+        </div>
+        <button class="btn" id="btn-retry">↻ Jugar de nuevo</button>
+        <button class="btn btn-secondary" id="btn-menu">Menú</button>
+      </div>
+    `);
+    const retry = document.getElementById('btn-retry');
+    const menu = document.getElementById('btn-menu');
+    if (retry) retry.addEventListener('click', () => { Game.resetAll(); Game.start(); });
     if (menu) menu.addEventListener('click', () => { Game.resetAll(); UI.showTitle(); });
   },
 };

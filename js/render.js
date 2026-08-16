@@ -108,7 +108,8 @@ const Render = {
     return (h >>> 0);
   },
 
-  drawScene(ctx) {
+  drawScene(ctx, opts) {
+    opts = opts || {};
     const theme = this.theme();
     const tkey = Game.currentLevel().theme || 'day';
     if (!this.skyCache[tkey]) this.buildSky(tkey);
@@ -125,7 +126,7 @@ const Render = {
     // nubes (ninguna de noche)
     if (theme.clouds) this.drawClouds(ctx, theme.cloudAlpha);
 
-    this.drawBuildings(ctx, theme);
+    if (!opts.noBuildings) this.drawBuildings(ctx, theme);
     this.drawCrosswalks(ctx, theme);
     this.drawStreet(ctx, theme);
     this.drawSidewalks(ctx, theme);
@@ -143,6 +144,128 @@ const Render = {
     if (theme.ambient) {
       ctx.fillStyle = theme.ambient;
       ctx.fillRect(0, 0, CONFIG.VW, CONFIG.VH);
+    }
+  },
+
+  // ---- Interior de la Municipalidad (arena del jefe) ----
+  drawBossArena(ctx) {
+    // pared de fondo
+    ctx.fillStyle = '#a59880';
+    ctx.fillRect(0, 0, CONFIG.VW, CONFIG.VH);
+    ctx.strokeStyle = 'rgba(0,0,0,0.10)';
+    ctx.lineWidth = 2;
+    for (let x = 0; x <= CONFIG.VW; x += 80) {
+      ctx.beginPath(); ctx.moveTo(x, 24); ctx.lineTo(x, 150); ctx.stroke();
+    }
+    // cornisa superior
+    ctx.fillStyle = '#6a5c46'; ctx.fillRect(0, 0, CONFIG.VW, 10);
+    ctx.fillStyle = '#8a7c66'; ctx.fillRect(0, 10, CONFIG.VW, 6);
+    ctx.fillStyle = '#4a3c28'; ctx.fillRect(0, 16, CONFIG.VW, 3);
+    // zócalo
+    ctx.fillStyle = '#6a5c46'; ctx.fillRect(0, 236, CONFIG.VW, 12);
+    ctx.fillStyle = '#4a3c28'; ctx.fillRect(0, 248, CONFIG.VW, 4);
+
+    // doble puerta de entrada al fondo (detrás del jefe)
+    ctx.fillStyle = '#3f3526'; ctx.fillRect(252, 70, 136, 88);
+    ctx.fillStyle = '#5f4a30'; ctx.fillRect(258, 74, 62, 84);
+    ctx.fillStyle = '#543f28'; ctx.fillRect(322, 74, 62, 84);
+    ctx.fillStyle = '#f0e6cc'; ctx.fillRect(272, 106, 6, 6);
+    ctx.fillStyle = '#f0e6cc'; ctx.fillRect(336, 106, 6, 6);
+    ctx.fillStyle = '#2a2318'; ctx.fillRect(258, 154, 124, 4);
+    // cartel "ENTRADA"
+    ctx.fillStyle = '#2a2318'; ctx.fillRect(286, 50, 68, 22);
+    ctx.font = 'bold 9px monospace';
+    ctx.fillStyle = '#e8d9a8';
+    ctx.textAlign = 'center';
+    ctx.fillText('ENTRADA', 320, 65);
+    ctx.textAlign = 'left';
+
+    // columnas
+    const col = (x) => {
+      ctx.fillStyle = '#8a7c66'; ctx.fillRect(x, 40, 26, 200);
+      ctx.fillStyle = '#a59880'; ctx.fillRect(x + 3, 40, 20, 200);
+      ctx.fillStyle = '#6a5c46'; ctx.fillRect(x - 4, 32, 34, 10);
+      ctx.fillStyle = '#6a5c46'; ctx.fillRect(x - 4, 232, 34, 8);
+    };
+    col(18);
+    col(CONFIG.VW - 44);
+
+    // cartel de la Municipalidad
+    const bw = 300, bx = (CONFIG.VW - bw) / 2;
+    ctx.fillStyle = '#3f3526'; ctx.fillRect(bx, 100, bw, 34);
+    ctx.fillStyle = '#8c6f3a'; ctx.fillRect(bx + 3, 103, bw - 6, 28);
+    ctx.fillStyle = '#2a2318'; ctx.fillRect(bx + 3, 127, bw - 6, 3);
+    ctx.font = 'bold 13px monospace';
+    ctx.fillStyle = '#f5e9c9';
+    ctx.textAlign = 'center';
+    ctx.fillText('MUNICIPALIDAD', 320, 117);
+    ctx.font = 'bold 10px monospace';
+    ctx.fillText('DE BAHÍA BLANCA', 320, 128);
+    ctx.textAlign = 'left';
+
+    // piso en 3 filas (coinciden con las veredas del personaje)
+    this.paintSidewalk(ctx, 152, 76, '#8d7f66', '#80715a');
+    this.paintSidewalk(ctx, 228, 84, '#7c6e56', '#6f6149');
+    this.paintSidewalk(ctx, 312, 48, '#6b5d45', '#5e5039');
+    ctx.fillStyle = '#4a3c28';
+    ctx.fillRect(0, 152, CONFIG.VW, 4);
+    ctx.fillRect(0, 228, CONFIG.VW, 4);
+    ctx.fillRect(0, 312, CONFIG.VW, 4);
+
+    // luz ambiental de sala
+    ctx.fillStyle = 'rgba(255,225,130,0.06)';
+    ctx.fillRect(0, 0, CONFIG.VW, CONFIG.VH);
+    ctx.fillStyle = 'rgba(20,10,0,0.14)';
+    ctx.fillRect(0, 152, CONFIG.VW, CONFIG.VH - 152);
+  },
+
+  // ---- Animación de entrada al edificio (estado bossintro) ----
+  // 1) la calle nocturna se acerca a la fachada (SPR.muni en la vereda
+  //    de arriba), 2) fundido a negro, 3) interior.
+  drawMuniIntro(ctx, t) {
+    const drawNight = () => this.drawScene(ctx, { noBuildings: true });
+    const drawMuni = (sc) => {
+      const s = 4 * sc;
+      drawSprite(ctx, SPR.muni, CONFIG.VW / 2 - (SPR.muni.w * s) / 2, CONFIG.LANES[0].feetY, { scale: s, pivot: 'bottom' });
+    };
+    const drawRunner = () => {
+      const spr = SPR.player.run[Math.floor(Game.time * 10) % 6];
+      drawSprite(ctx, spr, CONFIG.VW / 2 - 30, CONFIG.LANES[1].feetY, { scale: 2, pivot: 'bottom' });
+    };
+
+    if (t < 1.6) {
+      drawNight();
+      const k = Math.min(1, t / 1.6);
+      const e = 1 - (1 - k) * (1 - k);        // ease-out (acercamiento)
+      drawMuni(0.85 + 0.15 * e);              // acercamiento sutil 0.85..1
+      drawRunner();
+    } else if (t < 1.8) {
+      drawNight();
+      drawMuni(1);
+      drawRunner();
+      ctx.fillStyle = 'rgba(0,0,0,' + Math.min(1, (t - 1.6) / 0.2) + ')';
+      ctx.fillRect(0, 0, CONFIG.VW, CONFIG.VH);
+    } else if (t < 2.9) {
+      const k = Math.min(1, (t - 1.8) / 1.1);
+      this.drawBossArena(ctx);
+      ctx.fillStyle = 'rgba(0,0,0,' + (1 - k) + ')';
+      ctx.fillRect(0, 0, CONFIG.VW, CONFIG.VH);
+      // título sobre el interior
+      if (k > 0.35) {
+        const a = (k - 0.35) / 0.65;
+        ctx.globalAlpha = Math.min(1, a);
+        ctx.font = 'bold 20px monospace';
+        ctx.fillStyle = '#f5e9c9';
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 4;
+        ctx.textAlign = 'center';
+        ctx.strokeText('MUNICIPALIDAD', CONFIG.VW / 2, 220);
+        ctx.fillText('MUNICIPALIDAD', CONFIG.VW / 2, 220);
+        ctx.textAlign = 'left';
+        ctx.globalAlpha = 1;
+      }
+    } else {
+      this.drawBossArena(ctx);
     }
   },
 

@@ -4,7 +4,7 @@
 const Game = {
   canvas: null,
   ctx: null,
-  state: 'title',        // title | banner | playing | gameover | complete
+  state: 'title',        // title | banner | playing | gameover | complete | bossintro | boss
   player: null,
   cameraX: 0,
   time: 0,
@@ -29,6 +29,12 @@ const Game = {
   garrapinadaBag: null,        // bolsita sin agarrar
   garrapinadaSpawned: false,   // 1 bolsita por nivel como máximo
   garrapinadaCooldown: 0,
+  boss: null,                  // PigeonBoss (jefe final)
+  desks: [],                   // escritorios "mesa de entrada"
+  bossPoops: [],               // cacas dirigidas del jefe
+  deskTimer: 0,                // temporizador de aparición de escritorios
+  bossIntroTimer: 0,           // tiempo de la animación de entrada
+  bossMode: false,             // true = arena de la Municipalidad
 
   init() {
     this.canvas = document.getElementById('game-canvas');
@@ -80,6 +86,12 @@ const Game = {
     this.garrapinadaBag = null;
     this.garrapinadaSpawned = false;
     this.garrapinadaCooldown = 0;
+    this.boss = null;
+    this.desks = [];
+    this.bossPoops = [];
+    this.deskTimer = 0;
+    this.bossIntroTimer = 0;
+    this.bossMode = false;
     UI.hideThrowButton();
     this.state = 'title';
     LevelGen.init(12345 + this.levelIndex * 7777);
@@ -145,11 +157,176 @@ const Game = {
         AudioSys.startMusic();
       }, 1800);
     } else {
+      // tras la última calle (ALSINA) viene el jefe final en la Municipalidad
+      this.startBossIntro();
+    }
+  },
+
+  // ---- Nivel 4: Municipalidad (jefe final) ----
+
+  // Animación de entrada: cartel + aproximación al edificio.
+  startBossIntro() {
+    AudioSys.resume();
+    this.bossIntroTimer = 0;
+    this.state = 'banner';
+    UI.showLevelBanner('¡La Municipalidad te espera!');
+    setTimeout(() => {
+      this.state = 'bossintro';
+      UI.hide();
+      AudioSys.startMusic();
+    }, 1800);
+  },
+
+  // Entra a la arena del jefe. Al empezar entrega las garrapiñadas gratis.
+  startBossFight(carryCoins) {
+    const coins = carryCoins ? this.player.coins : 0;
+    this.player = new Player();
+    if (carryCoins) this.player.coins = coins;
+    this.player.running = false;        // la arena es estática: no corre hacia adelante
+    this.player.distance = 0;
+    this.cameraX = 0;
+    this.difficulty = 0;
+    this.pigeons = [];
+    this.poops = [];
+    this.cars = [];
+    this.pedestrians = [];
+    this.potholes = [];
+    this.coins = [];
+    this.stands = [];
+    this.deco = [];
+    this.garrapinadas = [];
+    this.garrapinadaBag = null;
+    this.desks = [];
+    this.bossPoops = [];
+    this.deskTimer = 1.2;               // primer escritorio tarde
+    this.buyZone = null;
+    this.buyMsg = '';
+    this.buyMsgTime = 0;
+    this.shakeTime = 0;
+    this.levelComplete = false;
+    this.bossMode = true;
+    this.boss = new PigeonBoss();
+    this.player.hasGarrapinadas = true;
+    this.player.garrapinadas = CONFIG.BOSS_GARRAPIÑADAS;
+    this.buyMsg = '¡GARRAPIÑADAS! LANZALAS CON X (x' + this.player.garrapinadas + ')';
+    this.buyMsgTime = 2.0;
+    UI.showThrowButton();
+    this.state = 'boss';
+  },
+
+  updateBoss(dt) {
+    const p = this.player;
+    p.update(dt);
+    p.distance = 0;                     // el escenario no avanza
+    this.cameraX = 0;
+
+    this.boss.update(dt);
+
+    // escritorios "mesa de entrada": de izquierda a derecha, máx 2 a la vez
+    // (siempre queda al menos una vereda libre para esquivar)
+    this.deskTimer -= dt;
+    if (this.deskTimer <= 0 && this.desks.length < CONFIG.DESK_MAX) {
+      this.deskTimer = 0.9 + Math.random() * 0.7;
+      const lanes = [CONFIG.LANES[0].feetY, CONFIG.LANES[1].feetY, CONFIG.LANES[2].feetY];
+      const y = lanes[Math.floor(Math.random() * lanes.length)];
+      this.desks.push(new Desk(y));
+    }
+    for (const d of this.desks) d.update(dt);
+    this.desks = this.desks.filter(d => d.x < CONFIG.VW + 100);
+
+    for (const bp of this.bossPoops) bp.update(dt);
+    this.bossPoops = this.bossPoops.filter(bp =>
+      !bp.dead && bp.x > -60 && bp.x < CONFIG.VW + 60 && bp.y < 420);
+
+    // lanzar garrapiñadas (ráfaga de 3, sale del cuerpo del personaje)
+    this.garrapinadaCooldown = Math.max(0, this.garrapinadaCooldown - dt);
+    if (Input.throwPressed && p.alive && p.hasGarrapinadas && p.garrapinadas > 0 &&
+        this.garrapinadaCooldown <= 0) {
+      p.garrapinadas--;
+      this.garrapinadaCooldown = CONFIG.GARRAPIÑADA_THROW_COOLDOWN;
+      const gx = p.x + 14;
+      const gy = p.feetY - 46;
+      for (const vy of [-140, -240, -340]) {
+        this.garrapinadas.push(new Garrapinada(gx, gy, vy));
+      }
+      AudioSys.throw();
+      if (p.garrapinadas <= 0) {
+        p.hasGarrapinadas = false;
+        this.buyMsg = '¡SIN GARRAPIÑADAS!';
+        this.buyMsgTime = 1.0;
+        UI.hideThrowButton();
+      }
+    }
+    for (const g of this.garrapinadas) g.update(dt);
+    this.garrapinadas = this.garrapinadas.filter(g =>
+      !g.dead && screenX(g.worldX) > -40 && screenX(g.worldX) < CONFIG.VW + 40 && g.y < 420);
+
+    this.hitBossWithGarrapinadas();
+    this.bossCollisions();
+
+    if (!p.alive) {
+      this.lives--;
+      if (this.lives > 0) {
+        this.startBossFight(true);      // conserva las monedas
+        this.state = 'banner';
+        UI.showLevelBanner('¡PERDISTE UNA VIDA! Te quedan ' + this.lives);
+        AudioSys.resume();
+        setTimeout(() => {
+          this.state = 'boss';
+          UI.hide();
+          AudioSys.startMusic();
+        }, 1200);
+      } else {
+        this.state = 'gameover';
+        setTimeout(() => UI.showGameOver(), 900);
+      }
+      return;
+    }
+
+    // jefe derrotado: que caiga y cierra el juego
+    if (this.boss.dead && this.boss.deadTimer > 1.3) {
       this.levelComplete = true;
       this.state = 'complete';
       AudioSys.stopMusic();
       AudioSys.levelUp();
-      UI.showLevelComplete();
+      UI.showBossVictory();
+    }
+  },
+
+  // Las garrapiñadas lanzadas dañan al jefe (1 HP cada una).
+  hitBossWithGarrapinadas() {
+    if (this.boss.dead) return;
+    for (const g of this.garrapinadas) {
+      if (g.dead) continue;
+      if (rectOverlap(g.hitbox(), this.boss.hitbox())) {
+        g.dead = true;
+        this.boss.takeHit();
+        this.shakeTime = 0.12;
+      }
+    }
+  },
+
+  // Colisiones de la arena: jefe por contacto, escritorios y cacas dirigidas.
+  bossCollisions() {
+    const p = this.player;
+    const hb = p.hitbox();
+
+    if (!this.boss.dead && p.invincible <= 0 && rectOverlap(hb, this.boss.hitbox())) {
+      p.takeDamage(CONFIG.BOSS_CONTACT_DAMAGE);
+    }
+    for (const d of this.desks) {
+      if (p.invincible <= 0 && rectOverlap(hb, d.hitbox())) {
+        p.takeDamage(CONFIG.DESK_DAMAGE);
+        this.shakeTime = 0.3;
+        AudioSys.car();
+      }
+    }
+    for (const bp of this.bossPoops) {
+      if (bp.dead) continue;
+      if (p.invincible <= 0 && rectOverlap(hb, bp.hitbox())) {
+        bp.dead = true;
+        p.takeDamage(CONFIG.BOSS_POOP_DAMAGE);
+      }
     }
   },
 
@@ -166,6 +343,19 @@ const Game = {
     this.time += dt;
     if (this.buyMsgTime > 0) this.buyMsgTime -= dt;
     if (this.shakeTime > 0) this.shakeTime -= dt;
+
+    // animación de entrada a la Municipalidad (solo visual)
+    if (this.state === 'bossintro') {
+      this.bossIntroTimer += dt;
+      if (this.bossIntroTimer >= CONFIG.BOSS_INTRO_TIME) {
+        this.startBossFight(false);
+      }
+      return;
+    }
+    if (this.state === 'boss') {
+      this.updateBoss(dt);
+      return;
+    }
     if (this.state !== 'playing') return;
 
     const p = this.player;
@@ -411,39 +601,53 @@ const Game = {
       ctx.translate((Math.random() - 0.5) * 10, (Math.random() - 0.5) * 8);
     }
 
-    Render.drawScene(ctx);
-
-    // pozos (debajo de todo en el piso)
-    for (const e of this.potholes) e.draw(ctx);
-    for (const e of this.stands) e.draw(ctx);
-    if (this.garrapinadaBag && !this.garrapinadaBag.taken) this.garrapinadaBag.draw(ctx);
-    for (const e of this.coins) e.draw(ctx);
-
-    // peatones (bloquean carriles: todos visibles y con colisión)
-    for (const e of this.pedestrians) e.draw(ctx);
-
-    // cacas y palomas
-    for (const e of this.poops) e.draw(ctx);
-    for (const e of this.pigeons) e.draw(ctx);
-
-    // autos y jugador: en la vereda de arriba la camioneta (techo) pasa por delante
-    // del personaje; en la calle o la vereda inferior el personaje va por delante.
-    if (this.player.lane === 0) {
+    if (this.state === 'bossintro') {
+      Render.drawMuniIntro(ctx, this.bossIntroTimer);
+    } else if (this.bossMode) {
+      // arena interior de la Municipalidad
+      Render.drawBossArena(ctx);
+      for (const e of this.desks) e.draw(ctx);
+      for (const e of this.bossPoops) e.draw(ctx);
+      for (const g of this.garrapinadas) g.draw(ctx);
       this.player.draw(ctx);
-      for (const e of this.cars) e.draw(ctx);
+      this.boss.draw(ctx);
     } else {
-      for (const e of this.cars) e.draw(ctx);
-      this.player.draw(ctx);
-    }
+      Render.drawScene(ctx);
 
-    // garrapiñadas lanzadas (por encima de todo)
-    for (const g of this.garrapinadas) g.draw(ctx);
+      // pozos (debajo de todo en el piso)
+      for (const e of this.potholes) e.draw(ctx);
+      for (const e of this.stands) e.draw(ctx);
+      if (this.garrapinadaBag && !this.garrapinadaBag.taken) this.garrapinadaBag.draw(ctx);
+      for (const e of this.coins) e.draw(ctx);
+
+      // peatones (bloquean carriles: todos visibles y con colisión)
+      for (const e of this.pedestrians) e.draw(ctx);
+
+      // cacas y palomas
+      for (const e of this.poops) e.draw(ctx);
+      for (const e of this.pigeons) e.draw(ctx);
+
+      // autos y jugador: en la vereda de arriba la camioneta (techo) pasa por delante
+      // del personaje; en la calle o la vereda inferior el personaje va por delante.
+      if (this.player.lane === 0) {
+        this.player.draw(ctx);
+        for (const e of this.cars) e.draw(ctx);
+      } else {
+        for (const e of this.cars) e.draw(ctx);
+        this.player.draw(ctx);
+      }
+
+      // garrapiñadas lanzadas (por encima de todo)
+      for (const g of this.garrapinadas) g.draw(ctx);
+    }
 
     ctx.restore();
 
     // HUD
-    if (this.state === 'playing' || this.state === 'complete' || this.state === 'gameover') {
+    if (this.state === 'playing' || this.state === 'complete' || this.state === 'gameover' ||
+        this.state === 'boss') {
       UI.drawHUD(ctx);
+      if (this.state === 'boss') UI.drawBossBar(ctx);
     }
 
     // mensaje de compra
@@ -460,7 +664,8 @@ const Game = {
     }
 
     // máscara de damage (flash rojo)
-    if (this.player.invincible > 0 && this.player.hp > 0 && this.state === 'playing') {
+    if (this.player.invincible > 0 && this.player.hp > 0 &&
+        (this.state === 'playing' || this.state === 'boss')) {
       ctx.fillStyle = 'rgba(255,40,40,0.10)';
       ctx.fillRect(0, 0, CONFIG.VW, CONFIG.VH);
     }

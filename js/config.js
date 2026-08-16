@@ -60,6 +60,18 @@ const CONFIG = {
   // Peatones
   PEDESTRIAN_SPEED: 40,
 
+  // Nivel 4 — Jefe final (Municipalidad)
+  BOSS_HP: 20,                 // vida del jefe (1 punto por garrapiñada)
+  BOSS_GARRAPIÑADAS: 30,       // garrapiñadas gratis al entrar al edificio
+  BOSS_CONTACT_DAMAGE: 15,     // daño al tocar al jefe (barre la vereda de arriba)
+  BOSS_POOP_DAMAGE: 15,
+  BOSS_POOP_COOLDOWN: 2.0,     // segundos entre cacas dirigidas
+  BOSS_POOP_SPEED: 170,
+  DESK_DAMAGE: 25,             // daño al chocar con un escritorio
+  DESK_SPEED: 130,             // velocidad de los escritorios (izquierda -> derecha)
+  DESK_MAX: 2,                 // máx. escritorios simultáneos (deja una fila libre)
+  BOSS_INTRO_TIME: 3.2,        // duración de la animación de entrada
+
   // Niveles — cada uno es una calle de Bahía Blanca con sus locales
   LEVELS: [
     {

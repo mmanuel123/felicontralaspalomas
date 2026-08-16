@@ -33,6 +33,8 @@ class Player {
     this.pedBlocked = false;
     this.pedBlockedPrev = false;
     this.pedHitCooldown = 0;
+    this.pendingLane = 0;      // carril pedido pero bloqueado (se reintenta)
+    this.pendingTime = 0;      // ventana de reintento restante
   }
 
   get laneInfo() { return CONFIG.LANES[this.lane]; }
@@ -70,16 +72,17 @@ class Player {
     AudioSys.stopMusic();
   }
 
-  changeLane(dir) {
-    if (!this.alive || this.airborne || this.state === 'hurt') return;
+  changeLane(dir, silent) {
+    if (!this.alive || this.airborne || this.state === 'hurt') return 'busy';
     const next = this.lane + dir;
-    if (next < 0 || next >= CONFIG.LANES.length) return;
+    if (next < 0 || next >= CONFIG.LANES.length) return 'invalid';
     if (this.laneBlockedByPedestrian(next)) {
-      AudioSys.bump();
-      return;
+      if (!silent) AudioSys.bump();
+      return 'blocked';
     }
     this.lane = next;
     this.targetFeetY = CONFIG.LANES[next].feetY;
+    return 'ok';
   }
 
   // ¿un peatón está parado justo donde quiero pisar?
@@ -169,9 +172,27 @@ class Player {
       return;
     }
 
-    // movimiento vertical (entre lanes) — solo con pulsaciones nuevas
-    if (Input.upPressed && !this.airborne) this.changeLane(-1);
-    if (Input.downPressed && !this.airborne) this.changeLane(1);
+    // movimiento vertical (entre lanes) — con buffer: si la pulsación
+    // queda bloqueada (peatón, en el aire o lastimado) se reintenta hasta
+    // que el carril quede libre o expire la ventana.
+    if (Input.upPressed) {
+      if (this.changeLane(-1) !== 'ok') { this.pendingLane = -1; this.pendingTime = 0.5; }
+      else this.pendingLane = 0;
+    } else if (Input.downPressed) {
+      if (this.changeLane(1) !== 'ok') { this.pendingLane = 1; this.pendingTime = 0.5; }
+      else this.pendingLane = 0;
+    }
+    if (this.pendingLane !== 0) {
+      if ((this.pendingLane === 1 && Input.down) || (this.pendingLane === -1 && Input.up)) {
+        this.pendingTime = 0.5;   // se sostiene la tecla: se sigue reintentando
+      }
+      this.pendingTime -= dt;
+      if (this.pendingTime <= 0) {
+        this.pendingLane = 0;
+      } else if (this.changeLane(this.pendingLane, true) === 'ok') {
+        this.pendingLane = 0;
+      }
+    }
 
     // suavizado del cambio de vereda
     const diff = this.targetFeetY - this.feetY;

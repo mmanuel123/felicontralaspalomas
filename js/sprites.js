@@ -256,6 +256,68 @@ const PIGEON_DEAD = [
 ];
 
 // ============================================================
+// PALOMA GIGANTE (jefe final) — convertida de
+// Imagenes/paloma_ascii.txt (32x48, 20 colores, mira a la izquierda).
+// Escala 2 => ~96x64px (del tamaño del personaje).
+// ============================================================
+const P_PIGEON_BOSS = {
+  A: '#ABACAD',
+  B: '#0F1012',
+  C: '#7A7F7E',
+  D: '#272C36',
+  E: '#475163',
+  F: '#1F2120',
+  G: '#3C4248',
+  H: '#959BA0',
+  I: '#C6CAC9',
+  J: '#635B58',
+  K: '#EBF2F3',
+  L: '#060500',
+  M: '#B0C7D2',
+  N: '#85A2B0',
+  O: '#5A7189',
+  P: '#58676E',
+  Q: '#7592A9',
+  R: '#4F514E',
+  S: '#3E310C',
+  T: '#A96D2D',
+};
+const PIGEON_BOSS_GRID = [
+  '....ABLLBA......................................',
+  '...CBDEEDBC.....................................',
+  '...BDEEEEEFF....................................',
+  '.FLLGECHEEGL....................................',
+  'ILJRREKEEEDL....................................',
+  'LJJDDGEEEEDL....................................',
+  'BLLLLFEEEEEBF...................................',
+  '.....LEEEEEBF...................................',
+  '.....LEEEEEBFI..................................',
+  '.....ILEEEEELJ..................................',
+  '......LEEEEEDFH.................................',
+  '......LEEEEEEALB................................',
+  '......LEEEEEMMMMLGHH............................',
+  '.....DBEEEPMMMMMMNLRDI..........................',
+  '.....LEEEEMMMMMMMMMMBBB.........................',
+  '.....LEEEMMMMMMMMMMMMMCLF.......................',
+  '.....LEONMMMMMMMMMMMMMMPDLDDI...................',
+  '.....LNNNMMMMMMMMMMMMMODDDBFBL..................',
+  '.....LNNNMMMMMMMMMMMMEDDDMMHBBLR................',
+  '.....LNNNMMMMMMMMMMMEDDDMMPDDDMRLC..............',
+  '.....PBNNRMMMMMMMMNDDDDMMGDDDMMEDBBAA...........',
+  '......LNNNEMMMMMMDDDDEMMDDDDMMEDDDDLBG..........',
+  '......BENNQEDDDBBBBBDDDBBBBDDDBBBBBBLLD.........',
+  '.......BFNQOOOOOOOOOOOOOOOOOOOEEEEEEEEBLII......',
+  '........GLEOOOOOOOOOOOOOOOOOOOOOEEEEEEEELLJJ....',
+  '..........BLLLLLLEEELNNNBLLLLLLLLLLEEEEEEELFBJ..',
+  '...............RLEEBLNNFF.........RLBDEEFDGDFLLI',
+  '...............RLEFJLNBG............RFBLDDDLDDDL',
+  '..............GSTLHFLTL...............HHBLLFBLLL',
+  '............BLSTTLLSTTL.........................',
+  '...........LFSTTRFSTTSFL........................',
+  '...........LLLBLLLLLLLLL........................',
+];
+
+// ============================================================
 // AUTOS — generados a partir de Imagenes/Amarok.png y Ford.png
 // Colores reales de las fotos: Amarok amarilla (#f7c901),
 // Ford Falcon gris oscuro con techo claro.
@@ -386,148 +448,143 @@ function buildCars(scale) {
 }
 
 // ============================================================
-// PEATÓN
+// PEATÓN (v2) — 3 outfits: azul (remera), mujer (pollera), verde
+// Sprites estáticos: el caminar se simula con un suave rebote (bob).
 // ============================================================
-const P_PED1 = {
-  H: '#3a2415', S: '#f0b98a', E: '#20242e', T: '#3fae5a', P: '#5a5a6e', R: '#3a3a4a',
+const P_PED_AZUL = {
+  A: '#ABACAD', B: '#0F1012', C: '#F4A460', D: '#8B4513', E: '#1E90FF',
+  F: '#DC143C', G: '#FFFFFF', H: '#696969', I: '#A0522D', J: '#483D8B',
 };
-const P_PED2 = {
-  H: '#20242e', S: '#c98c5a', E: '#20242e', T: '#e9a23c', P: '#7a6a4a', R: '#3a3a4a',
+const PED_AZUL = [
+  '....DDDDDD.....',
+  '...DDDDDDDD....',
+  '..DDDDDDDDDD...',
+  '..DCCCCCCCCCC..',
+  '..DCCGCCCCGBCC.',
+  '..DCCGCCCCGBCC.',
+  '..DCCCCCCCCCCG.',
+  '..DCCFCCCCCCGG.',
+  '..DCCCCCCCCCCGG',
+  '...DCCCCCCCCCGG',
+  '...CEEEEEEECCC.',
+  '...EEEEEEEEECC.',
+  '..JEEEEEEEEEEC.',
+  '..JEEEEEEEEE...',
+  '..JEEEEEEEE....',
+  '..JEEEEE.......',
+  '..JJJJJJJ......',
+  '..HHHHH.HHH....',
+  '..HHHHH.HHH....',
+  '..HHHHH.HHH....',
+  '..HHHHH.HHH....',
+  '..HHHHH.HHH....',
+  '..HHHHH.HHH....',
+  '..IIIII.III....',
+];
+const P_PED_MUJER = {
+  A: '#ABACAD', B: '#0F1012', C: '#F4A460', D: '#8B4513', E: '#1E90FF',
+  F: '#DC143C', G: '#FFFFFF',
 };
-const P_PED3 = {
-  H: '#8a5a2f', S: '#e8b88c', E: '#20242e', T: '#4a7ad0', P: '#4a4a5a', R: '#20242e',
+const PED_MUJER = [
+  '.....DDDDD.....',
+  '....DDDDDDD....',
+  '...DDDDDDDDD...',
+  '...DCCCCCCCC...',
+  '...DCCBCCBCC...',
+  '...DCCGCCGCC...',
+  '...DCCCCCCCC...',
+  '....CCCCCC.....',
+  '....CEEEEEC....',
+  '...EEEEEEEEE...',
+  '...EEEEEEEEE...',
+  '...EEEEEEEEE...',
+  '..CCEEEEEEECC..',
+  '..CCEEEEEEECC..',
+  '..CCFFFFFFFCC..',
+  '..CCFFFFFFFCC..',
+  '..CCFFFFFFFCC..',
+  '..CCFFFFFFFCC..',
+  '..CFFFFFFFFC...',
+  '..CCCC...CCCC..',
+  '..CCCC...CCCC..',
+  '..CCCC...CCCC..',
+  '..CCCC...CCCC..',
+  '..CCCC...CCCC..',
+  '..FFFF...FFFF..',
+];
+const P_PED_VERDE = {
+  A: '#ABACAD', B: '#0F1012', C: '#F4A460', D: '#8B4513', E: '#32CD32',
+  F: '#DC143C', G: '#FFFFFF', H: '#A0522D', I: '#000000',
 };
-// Mujer: pelo largo (coleta), remera y pollera
-const P_PED4 = {
-  H: '#5a2a3a', S: '#e8b88c', E: '#20242e', T: '#e0608a', P: '#4a4a5e', R: '#20242e',
+const PED_VERDE = [
+  '....DDDDDD.....',
+  '...DDDDDDDD....',
+  '..DDDDDDDDDD...',
+  '...DDDDDDDD....',
+  '...DCCBCCBCC...',
+  '...DCCGCCGCC...',
+  '...DCCCCCCCC...',
+  '....CCCCCC.....',
+  '...EEEEEEEEE...',
+  '..EEEEEEEEEEE..',
+  '..EEEEEEEEEEE..',
+  '..EEEEEEEEEEE..',
+  '.CCEEEEEEEEECC.',
+  '.CCEEEEEEEEECC.',
+  '..EEHHHHHHHEE..',
+  '..EHHHHHHHHE...',
+  '..EHHH..HHHE...',
+  '..HHHH..HHHH...',
+  '..HHHH..HHHH...',
+  '..HHHH..HHHH...',
+  '..HHHH..HHHH...',
+  '..HHHH..HHHH...',
+  '..IIII..IIII...',
+];
+
+// ============================================================
+// MUNICIPALIDAD — fachada clásica (36x84). 'B' (cielo) es transparente.
+// ============================================================
+const P_MUNI = {
+  S: '#E5D9C5', H: '#9D8A75', W: '#5B7B9A', T: '#4A2E1B', P: '#0F1012', R: '#3D4550', G: '#7A8B99',
 };
-// Deportivo: buzo con capucha y zapatillas claras
-const P_PED5 = {
-  H: '#20242e', S: '#d9a05b', E: '#20242e', T: '#2f9e44', P: '#4a4a5a', R: '#e8eef2',
-};
-// Caminando (16x18, escala 3 => 48x54px): cabeza con pelo y ojo, remera
-// con brazos que se balancean en oposición a las piernas. Ciclo de 3 pasos:
-// A=contacto, B=paso intermedio, C=contacto invertido.
-const PED_A = [
-  '.......HHHH.....',
-  '......HHHHHH....',
-  '......HSSSSSH...',
-  '......HSSESSH...',
-  '.......SSSSS....',
-  '......TTTTTTTT..',
-  '.....TTTTTTTTTT.',
-  '..SS.TTTTTTTTT..',
-  '....TTTTTTTTT...',
-  '.....TTTTTTTT...',
-  '....PPPPPPPP....',
-  '...PP....PPP....',
-  '..PP.......PP...',
-  '..PP.......PP...',
-  '.RR........RR...',
-  '.RR........RR...',
-  '.RR........RR...',
-  '.RR........RR...',
-];
-const PED_B = [
-  '.......HHHH.....',
-  '......HHHHHH....',
-  '......HSSSSSH...',
-  '......HSSESSH...',
-  '.......SSSSS....',
-  '......TTTTTTTT..',
-  '.....TTTTTTTTTT.',
-  '..S..TTTTTTTTT..',
-  '..S..TTTTTTTT...',
-  '.....TTTTTTTT...',
-  '....PPPPPPPP....',
-  '....PPPPPPPP....',
-  '....PPP..PPP....',
-  '....PPP..PPP....',
-  '....RR....RR....',
-  '....RR....RR....',
-  '....RR....RR....',
-  '....RR....RR....',
-];
-const PED_C = [
-  '.......HHHH.....',
-  '......HHHHHH....',
-  '......HSSSSSH...',
-  '......HSSESSH...',
-  '.......SSSSS....',
-  '......TTTTTTTT..',
-  '.....TTTTTTTTTT.',
-  '.....TTTTTTTT.S.',
-  '.....TTTTTTT.S..',
-  '.....TTTTTTTT...',
-  '....PPPPPPPP....',
-  '....PPP...PP....',
-  '...PP.......PP..',
-  '...PP.......PP..',
-  '..RR........RR..',
-  '..RR........RR..',
-  '..RR........RR..',
-  '..RR........RR..',
-];
-// Mujer caminando (coleta atrás + pollera)
-const WOMAN_A = [
-  '.......HHHH.....',
-  '......HHHHHH....',
-  '......HSSSSSH...',
-  '......HSSESSH...',
-  '...HH..SSSSS....',
-  '...HH.TTTTTTTT..',
-  '......TTTTTTTTTT.',
-  '..SS.TTTTTTTTT..',
-  '....TTTTTTTTT...',
-  '.....TTTTTTTT...',
-  '....PPPPPPPPPP..',
-  '...PPPPPPPPPPPP.',
-  '...PPPPPPPPPPPP.',
-  '...PP.......PP..',
-  '..RR........RR..',
-  '..RR........RR..',
-  '..RR........RR..',
-  '..RR........RR..',
-];
-const WOMAN_B = [
-  '.......HHHH.....',
-  '......HHHHHH....',
-  '......HSSSSSH...',
-  '......HSSESSH...',
-  '...HH..SSSSS....',
-  '...HH.TTTTTTTT..',
-  '......TTTTTTTTTT.',
-  '..S...TTTTTTTTT..',
-  '..S...TTTTTTTT...',
-  '.....TTTTTTTT...',
-  '....PPPPPPPPPP..',
-  '...PPPPPPPPPPPP.',
-  '...PPPPPPPPPPPP.',
-  '....PPP..PPP....',
-  '....RR....RR....',
-  '....RR....RR....',
-  '....RR....RR....',
-  '....RR....RR....',
-];
-const WOMAN_C = [
-  '.......HHHH.....',
-  '......HHHHHH....',
-  '......HSSSSSH...',
-  '......HSSESSH...',
-  '...HH..SSSSS....',
-  '...HH.TTTTTTTT..',
-  '......TTTTTTTTTT.',
-  '.....TTTTTTTT.S.',
-  '.....TTTTTTT.S..',
-  '.....TTTTTTTT...',
-  '....PPPPPPPPPP..',
-  '...PPPPPPPPPPPP.',
-  '...PPPPPPPPPPPP.',
-  '...PP.......PP..',
-  '..RR........RR..',
-  '..RR........RR..',
-  '..RR........RR..',
-  '..RR........RR..',
+const MUNI_GRID = [
+  'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBRRRRRRRRBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+  'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBRRRRRRRRRRRRBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+  'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+  'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBSSSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+  'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBHHHHWWWWHHWWWWHHHHBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+  'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBHHHHWWWWHHWWWWHHHHBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+  'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBSSSSSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+  'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBSSSSSSSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+  'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBSSSSSSSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+  'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBSSSSSSSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+  'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBSSSSSBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+  'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBSSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+  'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBSSSSSSSSSSSSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+  'BBBBBBBBBBBBBBBBBBBBBBBBSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSBBBBBBBBBBBBBBBBBBBBBBBBB',
+  'BBBBBBHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHBBBBBB',
+  'BBBBBBSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSBBBBBB',
+  'BBBBBBSSSHHHHHSSSSSSSSSSSSSSHHHHHSSSSSSSSSSSSSSSSSSHHHHHSSSSSSSSSSSSSSHHHHHSSSBBBBBB',
+  'BBBBBBSSSSSSSSSSSHHHHHHHSSSSSSSSSHHHHHHHSSSSHHHHHHHSSSSSSSSSHHHHHHHSSSSSSSSSSSBBBBBB',
+  'BBBBBBSSSSHHHSSSSHWSWSWHSSSSSHHHSHWSWSWHSSSSHWSWSWHSHHHSSSSSHWSWSWHSSSSHHHSSSSBBBBBB',
+  'BBBBBBSSSSHHHSSSSHWSWSWHSSSSSHHHSHWSWSWHSSSSHWSWSWHSHHHSSSSSHWSWSWHSSSSHHHSSSSBBBBBB',
+  'BBBBBBSSSSHHHSSSSHHHHHHHSSSSSHHHSHHHHHHHSSSSHHHHHHHSHHHSSSSSHHHHHHHSSSSHHHSSSSBBBBBB',
+  'BBBBBBHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHBBBBBB',
+  'BBBBBBSSSSHHHSSSSHHHHHHHSSSSSHHHSHHHHHHHSSSSHHHHHHHSHHHSSSSSHHHHHHHSSSSHHHSSSSBBBBBB',
+  'GGGGGGSSSSHHHSSSSHWSWSWHSSSSSHHHSHWSWSWHSSSSHWSWSWHSHHHSSSSSHWSWSWHSSSSHHHSSSSGGGGGG',
+  'GSSGGGSSSSHHHSSSSHWSWSWHSSSSSHHHSHWSWSWHSSSSHWSWSWHSHHHSSSSSHWSWSWHSSSSHHHSSSSGGGSSG',
+  'GSSGGGSSSSHHHSSSSHHHHHHHSSSSSHHHSHHHHHHHSSSSHHHHHHHSHHHSSSSSHHHHHHHSSSSHHHSSSSGGGSSG',
+  'GGGGGGHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHGGGGGG',
+  'GGGGGGSSSSHHHSSSPSSSSSSPSSSSSHHHSSSPSSSHHHHHHSSSPSSSHHHSSSSSPSSSSSSPSSSHHHSSSSGGGGGG',
+  'BTTBBBSSSSHHHSSSPPPPPPPPSSSSSHHHSSSPSSSHHHHHHSSSPSSSHHHSSSSSPPPPPPPPSSSHHHSSSSBBBTTB',
+  'BTTBBBSSSSHHHSSSPPPPPPPPSSSSSHHHSSSPSSSHHHHHHSSSPSSSHHHSSSSSPPPPPPPPSSSHHHSSSSBBBTTB',
+  'BTTBBBSSSHHHHHSSPPPPPPPPSSSSHHHHHSSPSSSHHHHHHSSSPSSHHHHHSSSSPPPPPPPPSSHHHHHSSSBBBTTB',
+  'BTTBBBBBBBBBBBBBPPPPPPPPBBBBBBBBBBBPSSSHHHHHHSSSPBBBBBBBBBBBPPPPPPPPBBBBBBBBBBBBBTTB',
+  'BTTBBBBBBBGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBBBBBBTTB',
+  'BTTBBBBBHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHBBBBBTTB',
+  'BTTBBBGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGBBBTTB',
+  'BBBBHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHBBBB',
 ];
 
 // ============================================================
@@ -657,6 +714,21 @@ const GARRAPIÑADA_PELLET = [
   '.ccc.',
 ];
 
+// Escritorio "MESA DE ENTRADA" (40x10, escala 2 => 80x20)
+const P_DESK = { W: '#8a5a2f', w: '#6e4522', L: '#4a2f14', K: '#2e1c0a' };
+const DESK = [
+  '..LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL..',
+  '.LWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWL.',
+  '.LWwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwWL',
+  '.LWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWL.',
+  '.LwWwWwWwWwWwWwWwWwWwWwWwWwWwWwWwWwL.',
+  '.LWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWL.',
+  '.LwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwL.',
+  '.LWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWL.',
+  '..LLL.LL..........LL..........LL.LLL..',
+  '....L.L.L..........LL..........L.L.L..',
+];
+
 // ============================================================
 // Inicialización
 // ============================================================
@@ -671,12 +743,11 @@ function initSprites() {
   ];
   buildCars(4);
   SPR.pedestrians = [
-    makeSprite(PED_A, P_PED1, 3), makeSprite(PED_B, P_PED1, 3), makeSprite(PED_C, P_PED1, 3),
-    makeSprite(PED_A, P_PED2, 3), makeSprite(PED_B, P_PED2, 3), makeSprite(PED_C, P_PED2, 3),
-    makeSprite(PED_A, P_PED3, 3), makeSprite(PED_B, P_PED3, 3), makeSprite(PED_C, P_PED3, 3),
-    makeSprite(WOMAN_A, P_PED4, 3), makeSprite(WOMAN_B, P_PED4, 3), makeSprite(WOMAN_C, P_PED4, 3),
-    makeSprite(PED_A, P_PED5, 3), makeSprite(PED_B, P_PED5, 3), makeSprite(PED_C, P_PED5, 3),
+    makeSprite(PED_AZUL, P_PED_AZUL, 2),
+    makeSprite(PED_MUJER, P_PED_MUJER, 2),
+    makeSprite(PED_VERDE, P_PED_VERDE, 2),
   ];
+  SPR.muni = makeSprite(MUNI_GRID, P_MUNI, 1);
   SPR.pothole = makeSprite(POTHOLE, P_POTHOLE, 4);
   SPR.coins = [
     makeSprite(COIN_F1, P_COIN, 4),
@@ -689,4 +760,6 @@ function initSprites() {
   SPR.lamp = makeSprite(LAMP, P_LAMP, 4);
   SPR.garrapinada = makeSprite(GARRAPIÑADA_BAG, P_GARRAPIÑADA, 3);
   SPR.garrapinadaPellet = makeSprite(GARRAPIÑADA_PELLET, P_PELLET, 2);
+  SPR.pigeonBoss = makeSprite(PIGEON_BOSS_GRID, P_PIGEON_BOSS, 2);
+  SPR.desk = makeSprite(DESK, P_DESK, 2);
 }
